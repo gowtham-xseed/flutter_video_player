@@ -22,7 +22,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.xseededucation.flutter_video_player
+        package: com.example.flutter_video_player
         pluginClass: FlutterVideoPlayer
       ios:
         pluginClass: FlutterVideoPlayer
