@@ -18,14 +18,7 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
-flutter:
-  plugin:
-    platforms:
-      android:
-        package: com.example.flutter_video_player
-        pluginClass: FlutterVideoPlayer
-      ios:
-        pluginClass: FlutterVideoPlayer
+# flutter:
 
   # To add assets to your package, add an assets section, like this:
   # assets:
