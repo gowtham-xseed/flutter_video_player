@@ -15,25 +15,16 @@ class VideoPlayerInitial extends VideoPlayerState {
       : super(controller);
 }
 
-class Ready extends VideoPlayerState {
-  const Ready(VideoPlayerController controller) : super(controller);
-
-  @override
-  String toString() => 'Ready { controller: $controller }';
+class Playing extends VideoPlayerState {
+  Playing(VideoPlayerController controller) : super(controller);
 }
 
 class Paused extends VideoPlayerState {
   const Paused(VideoPlayerController controller) : super(controller);
-
-  @override
-  String toString() => 'Paused { controller: $controller }';
 }
 
-class Running extends VideoPlayerState {
-  const Running(VideoPlayerController controller) : super(controller);
-
-  @override
-  String toString() => 'Running { controller: $controller }';
+class Loading extends VideoPlayerState {
+  const Loading(VideoPlayerController controller) : super(controller);
 }
 
 class Finished extends VideoPlayerState {

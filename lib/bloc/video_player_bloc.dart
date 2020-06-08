@@ -22,8 +22,16 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   Stream<VideoPlayerState> mapEventToState(
     VideoPlayerEvent event,
   ) async* {
-    if (event is Start) {
-      yield* _mapStartToState(event);
+    if (event is Play) {
+      yield* _mapPlayToState(event);
+    } else if (event is Pause) {
+      yield* _mapPauseToState(event);
+    } else if (event is Reset) {
+      yield* _mapResetToState(event);
+    } else if (event is Load) {
+      yield* _mapLoadToState(event);
+    } else if (event is Load) {
+      yield* _mapLoadToState(event);
     }
   }
 
@@ -33,8 +41,23 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
     return super.close();
   }
 
-  Stream<VideoPlayerState> _mapStartToState(VideoPlayerEvent event) async* {
-    yield Running(_controller);
+  Stream<VideoPlayerState> _mapPlayToState(VideoPlayerEvent event) async* {
     _controller.play();
+    yield Playing(_controller);
+  }
+
+  Stream<VideoPlayerState> _mapPauseToState(VideoPlayerEvent event) async* {
+    _controller.pause();
+    yield Paused(_controller);
+  }
+
+  Stream<VideoPlayerState> _mapResetToState(VideoPlayerEvent event) async* {
+    _controller.seekTo(Duration(seconds: 1));
+    _controller.pause();
+    yield Finished(_controller);
+  }
+
+  Stream<VideoPlayerState> _mapLoadToState(VideoPlayerEvent event) async* {
+    yield Loading(_controller);
   }
 }

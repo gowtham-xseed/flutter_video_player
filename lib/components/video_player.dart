@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_video_player/bloc/video_player_bloc.dart';
+import 'package:flutter_video_player/components/youtube_skin.dart';
 import 'package:video_player/video_player.dart';
 
 class FlutterVideoPlayer extends StatelessWidget {
@@ -11,45 +12,39 @@ class FlutterVideoPlayer extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (context) => VideoPlayerBloc(controller: videoPlayerController),
-        child: FlutterVideoPlayerLayout(videoPlayerController: videoPlayerController));
+        child: FlutterVideoPlayerLayout());
   }
 }
 
 class FlutterVideoPlayerLayout extends StatelessWidget {
-  // final VideoPlayerBloc videoPlayerBloc;
-  // VideoPlayerBloc(){this.videoPlayerBloc};
-  // TODO: Get it from block
-  FlutterVideoPlayerLayout({this.videoPlayerController});
-  final VideoPlayerController videoPlayerController;
-
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => VideoPlayerBloc(controller: videoPlayerController),
-      child: Center(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          child: AspectRatio(
-            aspectRatio: _calculateAspectRatio(context),
-            child: _buildPlayerWithControls(videoPlayerController, context),
-          ),
+    final VideoPlayerBloc videoPlayerBloc = context.bloc<VideoPlayerBloc>();
+
+    return Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        child: AspectRatio(
+          aspectRatio: _calculateAspectRatio(context),
+          child: _buildPlayerWithControls(videoPlayerBloc, context),
         ),
       ),
     );
   }
 
   Container _buildPlayerWithControls(
-      VideoPlayerController videoPlayerController, BuildContext context) {
+      VideoPlayerBloc videoPlayerBloc, BuildContext context) {
     return Container(
         child: Stack(
       children: <Widget>[
         Container(),
         Center(
-          child: VideoPlayer(videoPlayerController),
+          child: VideoPlayer(videoPlayerBloc.state.controller),
         ),
         Container(),
-        _buildControls(context,
-            videoPlayerBloc: BlocProvider.of<VideoPlayerBloc>(context)),
+        YoutubeSkin(videoPlayerBloc: videoPlayerBloc),
+        // _buildControls(context,
+        //     videoPlayerBloc: BlocProvider.of<VideoPlayerBloc>(context)),
       ],
     ));
   }
@@ -66,12 +61,27 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
             style: TextStyle(color: Colors.blue),
           );
         }),
+        // Text(videoPlayerBloc.state.toString(), style: TextStyle(color: Colors.blue)),
         FlatButton(
           color: Colors.red,
           onPressed: () {
-            videoPlayerBloc.add(Start(controller: videoPlayerController));
+            videoPlayerBloc.add(Play());
           },
           child: Text("Play"),
+        ),
+        FlatButton(
+          color: Colors.red,
+          onPressed: () {
+            videoPlayerBloc.add(Pause());
+          },
+          child: Text("PAUSE"),
+        ),
+        FlatButton(
+          color: Colors.red,
+          onPressed: () {
+            videoPlayerBloc.add(Reset());
+          },
+          child: Text("Reset"),
         ),
       ],
     ));
