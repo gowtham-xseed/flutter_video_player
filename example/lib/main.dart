@@ -29,8 +29,8 @@ class _VideoAppState extends State<VideoApp> {
       title: 'Video Demo',
       home: Scaffold(
         body: Center(
-          child: VideoPlayer(
-            _controller,
+          child: FlutterVideoPlayer(
+            videoPlayerController: _controller,
           ),
         ),
         floatingActionButton: FloatingActionButton(

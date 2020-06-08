@@ -10,6 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
   video_player: any
+  flutter_bloc: ^4.0.0
+  equatable: ^1.0.0
 
 dev_dependencies:
   flutter_test:
@@ -19,7 +21,8 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
-# flutter:
+flutter:
+  uses-material-design: true
 
   # To add assets to your package, add an assets section, like this:
   # assets:
