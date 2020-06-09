@@ -15,3 +15,13 @@ class Resume extends VideoPlayerEvent {}
 class Reset extends VideoPlayerEvent {}
 
 class Load extends VideoPlayerEvent {}
+
+class SeekToRelativePosition extends VideoPlayerEvent {
+  SeekToRelativePosition(this.progressPercentage);
+  final double progressPercentage;
+
+  @override
+  String toString() {
+    return super.toString();
+  }
+}

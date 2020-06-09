@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_video_player/bloc/video_player_bloc.dart';
+import 'package:flutter_video_player/components/progress_bar.dart';
 
 class YoutubeSkin extends StatelessWidget {
   YoutubeSkin({Key key, @required this.videoPlayerBloc, this.theme = 'light'})
@@ -149,71 +151,37 @@ class YoutubeSkin extends StatelessWidget {
                     children: <Widget>[
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child:
-                              // MaterialVideoProgressBar(
-                              //     videoPlayerController,
-                              //     onDragStart: () {
-                              //       // _hideTimer?.cancel();
-                              //     },
-                              //     onDragEnd: () {
-                              //       // _startHideTimer();
-                              //     },
-                              //     colors: chewieController.cupertinoProgressColors ??
-                              //         ChewieProgressColors(
-                              //           playedColor: Color.fromARGB(
-                              //             120,
-                              //             255,
-                              //             255,
-                              //             255,
-                              //           ),
-                              //           handleColor: Color.fromARGB(
-                              //             255,
-                              //             255,
-                              //             255,
-                              //             255,
-                              //           ),
-                              //           bufferedColor: Color.fromARGB(
-                              //             60,
-                              //             255,
-                              //             255,
-                              //             255,
-                              //           ),
-                              //           backgroundColor: Color.fromARGB(
-                              //             20,
-                              //             255,
-                              //             255,
-                              //             255,
-                              //           ),
-                              //         ),
-                              //   ),
-                              // ),
-                              Slider(
-                            activeColor: Colors.red,
-                            value: 0.0,
-                            onChanged: (val) => {
-                              // setState(() {
-                              //   double currentPositionInMiliSeconds =
-                              //       videoPlayerController
-                              //               .value.duration.inMilliseconds *
-                              //           val;
-                              //   videoPlayerController.seekTo(Duration(
-                              //       milliseconds:
-                              //           currentPositionInMiliSeconds.round()));
-
-                              //   sliderValue = val;
-                              // })
-                            },
-                          ),
-                        ),
-                      ),
+                            padding: const EdgeInsets.all(8.0),
+                            child:
+                                BlocBuilder<VideoPlayerBloc, VideoPlayerState>(
+                                    builder: (context, state) {
+                              return Container(
+                                height: 20,
+                                child: ProgressBar(
+                                  videoPlayerBloc.state.controller.value,
+                                  onDragStart: (DragStartDetails details) {
+                                    print("onDragStart");
+                                  },
+                                  onDragEnd: (DragEndDetails details) {
+                                    print("onDragEnd");
+                                  },
+                                  onDragUpdate: (DragUpdateDetails details) {
+                                    print("onDragUpdate");
+                                  },
+                                  onTapDown: (TapDownDetails details) {
+                                    print("onDragUpdate");
+                                  },
+                                ),
+                              );
+                            })),
+                      )
                     ],
                   ),
-                  // Text(showControls.toString(), style: TextStyle(color: iconColor),),
                 ],
               )
             : null,
       ),
     );
+    
   }
 }

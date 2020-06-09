@@ -16,7 +16,14 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   final VideoPlayerController _controller;
 
   @override
-  VideoPlayerState get initialState => VideoPlayerInitial(_controller);
+  VideoPlayerState get initialState => _initialState();
+
+  VideoPlayerState _initialState() {
+    // _controller.addListener(() {
+    //   add(Play());
+    // });
+    return VideoPlayerInitial(_controller);
+  }
 
   @override
   Stream<VideoPlayerState> mapEventToState(
@@ -32,17 +39,15 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
       yield* _mapLoadToState(event);
     } else if (event is Load) {
       yield* _mapLoadToState(event);
+    } else if (event is SeekToRelativePosition) {
+      yield* _mapSeekToRelativePositionToState(event);
     }
   }
 
-  @override
-  Future<void> close() {
-    // Stop Video player
-    return super.close();
-  }
-
   Stream<VideoPlayerState> _mapPlayToState(VideoPlayerEvent event) async* {
-    _controller.play();
+    if(!_controller.value.isPlaying) {
+      _controller.play();
+    }
     yield Playing(_controller);
   }
 
@@ -59,5 +64,11 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
 
   Stream<VideoPlayerState> _mapLoadToState(VideoPlayerEvent event) async* {
     yield Loading(_controller);
+  }
+
+  Stream<VideoPlayerState> _mapSeekToRelativePositionToState(
+      VideoPlayerEvent event) async* {
+    print(event);
+    // double progressPercentage = event;
   }
 }
