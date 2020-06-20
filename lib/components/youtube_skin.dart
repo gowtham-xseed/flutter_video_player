@@ -133,15 +133,15 @@ class YoutubeSkin extends StatelessWidget {
                         style: TextStyle(color: iconColor),
                       ),
                       Spacer(),
-                      IconButton(
-                        icon: Icon(
-                          Icons.fullscreen,
-                          color: iconColor,
-                        ),
-                        onPressed: () {
-                          // chewieController.toggleFullScreen();
-                        },
-                      ),
+                      // IconButton(
+                      //   icon: Icon(
+                      //     Icons.fullscreen,
+                      //     color: iconColor,
+                      //   ),
+                      //   onPressed: () {
+                      //     // chewieController.toggleFullScreen();
+                      //   },
+                      // ),
                       SizedBox(
                         width: 20,
                       )
@@ -151,7 +151,7 @@ class YoutubeSkin extends StatelessWidget {
                     children: <Widget>[
                       Expanded(
                         child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.symmetric( horizontal: 45, vertical: 8.0),
                             child:
                                 BlocBuilder<VideoPlayerBloc, VideoPlayerState>(
                                     builder: (context, state) {

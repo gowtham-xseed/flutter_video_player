@@ -44,23 +44,19 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
         ),
         Container(),
         YoutubeSkin(videoPlayerBloc: videoPlayerBloc),
-        Row(
-          children: <Widget>[
-            FlatButton(
-                child: Text("Full Screen"),
-                color: Colors.red,
-                onPressed: () async {
-                  await _pushFullScreenWidget(context, videoPlayerBloc);
-                }),
-            FlatButton(
-                child: Text("Pop Full Screen"),
-                color: Colors.red,
-                onPressed: () async {
-                  await _popFullScreenWidget(context);
-                })
-          ],
+        Align(
+          alignment: Alignment.bottomRight,
+                  child: IconButton(
+            icon: Icon(
+              Icons.fullscreen,
+              color: Colors.white
+            ),
+            onPressed: () async {
+               await _pushFullScreenWidget(context, videoPlayerBloc);
+              //  await _popFullScreenWidget(context);
+            },
+          ),
         ),
-
         // _buildControls(context,
         //     videoPlayerBloc: BlocProvider.of<VideoPlayerBloc>(context)),
       ],
