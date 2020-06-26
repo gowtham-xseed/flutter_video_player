@@ -63,44 +63,6 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
     ));
   }
 
-  Widget _buildControls(BuildContext context,
-      {VideoPlayerBloc videoPlayerBloc}) {
-    return Container(
-        child: Column(
-      children: <Widget>[
-        BlocBuilder<VideoPlayerBloc, VideoPlayerState>(
-            builder: (context, state) {
-          return Text(
-            'Test - ' + videoPlayerBloc.state.toString(),
-            style: TextStyle(color: Colors.blue),
-          );
-        }),
-        // Text(videoPlayerBloc.state.toString(), style: TextStyle(color: Colors.blue)),
-        FlatButton(
-          color: Colors.red,
-          onPressed: () {
-            videoPlayerBloc.add(Play());
-          },
-          child: Text("Play"),
-        ),
-        FlatButton(
-          color: Colors.red,
-          onPressed: () {
-            videoPlayerBloc.add(Pause());
-          },
-          child: Text("PAUSE"),
-        ),
-        FlatButton(
-          color: Colors.red,
-          onPressed: () {
-            videoPlayerBloc.add(Reset());
-          },
-          child: Text("Reset"),
-        ),
-      ],
-    ));
-  }
-
   double _calculateAspectRatio(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final width = size.width;
