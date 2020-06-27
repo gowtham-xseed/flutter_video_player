@@ -20,47 +20,56 @@ class FlutterVideoPlayer extends StatelessWidget {
 class FlutterVideoPlayerLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final VideoPlayerBloc videoPlayerBloc = context.bloc<VideoPlayerBloc>();
-
     return Center(
       child: Container(
         width: MediaQuery.of(context).size.width,
         child: AspectRatio(
           aspectRatio: _calculateAspectRatio(context),
-          child: _buildPlayerWithControls(videoPlayerBloc, context),
+          child: _buildPlayerWithControls(),
         ),
       ),
     );
   }
 
-  Container _buildPlayerWithControls(
-      VideoPlayerBloc videoPlayerBloc, BuildContext context) {
-    return Container(
-        child: Stack(
-      children: <Widget>[
-        Container(),
-        Center(
-          child: VideoPlayer(videoPlayerBloc.state.controller),
-        ),
-        Container(),
-        YoutubeSkin(videoPlayerBloc: videoPlayerBloc),
-        Align(
-          alignment: Alignment.bottomRight,
-                  child: IconButton(
-            icon: Icon(
-              Icons.fullscreen,
-              color: Colors.white
+  BlocBuilder _buildPlayerWithControls() {
+    return BlocBuilder<VideoPlayerBloc, VideoPlayerState>(
+      builder: (context, state) {
+        if (state is VideoPlayerSuccess) {
+          return Container(
+              child: Stack(
+            children: <Widget>[
+              Container(),
+              Center(
+                child: VideoPlayer(state.controller),
+              ),
+              Container(),
+              YoutubeSkin(),
+              // Align(
+              //   alignment: Alignment.bottomRight,
+              //   child: IconButton(
+              //     icon: Icon(Icons.fullscreen, color: Colors.white),
+              //     onPressed: () async {
+              //       await _pushFullScreenWidget(context, videoPlayerBloc);
+              //       //  await _popFullScreenWidget(context);
+              //     },
+              //   ),
+              // ),
+            ],
+          ));
+        } else {
+          return Container(
+            color: Colors.black,
+            child: IconButton(
+              icon: Icon(Icons.play_arrow, color: Colors.white, size: 60),
+              onPressed: () {
+                // BlocProvider.of<VideoPlayerBloc>(context)
+                //     .add(VideoPlayerToggled());
+              },
             ),
-            onPressed: () async {
-               await _pushFullScreenWidget(context, videoPlayerBloc);
-              //  await _popFullScreenWidget(context);
-            },
-          ),
-        ),
-        // _buildControls(context,
-        //     videoPlayerBloc: BlocProvider.of<VideoPlayerBloc>(context)),
-      ],
-    ));
+          );
+        }
+      },
+    );
   }
 
   double _calculateAspectRatio(BuildContext context) {
@@ -106,21 +115,21 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
       Animation<double> animation,
       Animation<double> secondaryAnimation,
       VideoPlayerBloc videoPlayerBloc) {
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (BuildContext context, Widget child) {
-        return BlocProvider(
-            create: (context) =>
-                VideoPlayerBloc(controller: videoPlayerBloc.state.controller),
-            child: Scaffold(
-              resizeToAvoidBottomPadding: false,
-              body: Container(
-                alignment: Alignment.center,
-                color: Colors.black,
-                child: FlutterVideoPlayerLayout(),
-              ),
-            ));
-      },
-    );
+    // return AnimatedBuilder(
+    //   animation: animation,
+    //   builder: (BuildContext context, Widget child) {
+    //     return BlocProvider(
+    //         create: (context) =>
+    //             VideoPlayerBloc(controller: videoPlayerBloc.state.controller),
+    //         child: Scaffold(
+    //           resizeToAvoidBottomPadding: false,
+    //           body: Container(
+    //             alignment: Alignment.center,
+    //             color: Colors.black,
+    //             child: FlutterVideoPlayerLayout(),
+    //           ),
+    //         ));
+    //   },
+    // );
   }
 }

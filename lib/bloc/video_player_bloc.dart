@@ -11,64 +11,57 @@ part 'video_player_state.dart';
 class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   VideoPlayerBloc({@required VideoPlayerController controller})
       : assert(controller != null),
-        _controller = controller;
+        _controller = controller {
+    _controller.addListener(() {
+      print('Video Player Listen - ' + _controller.value.position.toString());
+      add(ProgresUpdated(_controller.value));
+    });
+  }
 
   final VideoPlayerController _controller;
 
   @override
-  VideoPlayerState get initialState => _initialState();
-
-  VideoPlayerState _initialState() {
-    // _controller.addListener(() {
-    //   add(Play());
-    // });
-    return VideoPlayerInitial(_controller);
-  }
+  VideoPlayerState get initialState => VideoPlayerInitial();
 
   @override
   Stream<VideoPlayerState> mapEventToState(
     VideoPlayerEvent event,
   ) async* {
-    if (event is Play) {
-      yield* _mapPlayToState(event);
-    } else if (event is Pause) {
-      yield* _mapPauseToState(event);
-    } else if (event is Reset) {
-      yield* _mapResetToState(event);
-    } else if (event is Load) {
-      yield* _mapLoadToState(event);
-    } else if (event is Load) {
-      yield* _mapLoadToState(event);
-    } else if (event is SeekToRelativePosition) {
+    if (event is VideoPlayerToggled) {
+      yield* _mapVideoPlayerToggledToState(event);
+    } else if (event is ProgresUpdated) {
+      yield* _mapProgresUpdatedToState(event);
+    } else if (event is VideoPlayerSeeked) {
       yield* _mapSeekToRelativePositionToState(event);
     }
   }
 
-  Stream<VideoPlayerState> _mapPlayToState(VideoPlayerEvent event) async* {
-    if(!_controller.value.isPlaying) {
+  Stream<VideoPlayerState> _mapVideoPlayerToggledToState(
+      VideoPlayerEvent event) async* {
+    if (_controller.value.isPlaying) {
+      _controller.pause();
+    } else {
       _controller.play();
     }
-    yield Playing(_controller);
+
+    yield VideoPlayerSuccess(_controller, _controller.value);
   }
 
-  Stream<VideoPlayerState> _mapPauseToState(VideoPlayerEvent event) async* {
-    _controller.pause();
-    yield Paused(_controller);
-  }
-
-  Stream<VideoPlayerState> _mapResetToState(VideoPlayerEvent event) async* {
-    _controller.seekTo(Duration(seconds: 1));
-    _controller.pause();
-    yield Finished(_controller);
-  }
-
-  Stream<VideoPlayerState> _mapLoadToState(VideoPlayerEvent event) async* {
-    yield Loading(_controller);
+  Stream<VideoPlayerState> _mapProgresUpdatedToState(
+      VideoPlayerEvent event) async* {
+    yield VideoPlayerSuccess(_controller, _controller.value);
   }
 
   Stream<VideoPlayerState> _mapSeekToRelativePositionToState(
-      VideoPlayerEvent event) async* {
-    print(event);
-    // double progressPercentage = event;
+      VideoPlayerSeeked event) async* {
+    _controller.seekTo(Duration(seconds: event.position.toInt()));
+
+    yield VideoPlayerSuccess(_controller, _controller.value);
+  }
+
+  @override
+  Future<void> close() {
+    _controller.removeListener(() {});
+    return super.close();
   }
 }

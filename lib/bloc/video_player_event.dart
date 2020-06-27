@@ -6,22 +6,17 @@ abstract class VideoPlayerEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class Play extends VideoPlayerEvent {}
+class VideoPlayerToggled extends VideoPlayerEvent {}
 
-class Pause extends VideoPlayerEvent {}
+class ProgresUpdated extends VideoPlayerEvent {
+  ProgresUpdated(this.position);
 
-class Resume extends VideoPlayerEvent {}
+  final VideoPlayerValue position;
+  List<Object> get props => [position];
+}
 
-class Reset extends VideoPlayerEvent {}
-
-class Load extends VideoPlayerEvent {}
-
-class SeekToRelativePosition extends VideoPlayerEvent {
-  SeekToRelativePosition(this.progressPercentage);
-  final double progressPercentage;
-
-  @override
-  String toString() {
-    return super.toString();
-  }
+class VideoPlayerSeeked extends VideoPlayerEvent {
+  VideoPlayerSeeked(this.position);
+  final double position;
+  List<Object> get props => [position];
 }

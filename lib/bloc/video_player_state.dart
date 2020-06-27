@@ -1,32 +1,29 @@
 part of 'video_player_bloc.dart';
 
 @immutable
-abstract class VideoPlayerState extends Equatable {
-  final VideoPlayerController controller;
-
-  const VideoPlayerState(this.controller);
-
-  @override
-  List<Object> get props => [controller];
-}
+abstract class VideoPlayerState extends Equatable {}
 
 class VideoPlayerInitial extends VideoPlayerState {
-  const VideoPlayerInitial(VideoPlayerController controller)
-      : super(controller);
+  @override
+  List<Object> get props => throw UnimplementedError();
 }
 
-class Playing extends VideoPlayerState {
-  Playing(VideoPlayerController controller) : super(controller);
+class VideoPlayerLoading extends VideoPlayerState {
+  @override
+  List<Object> get props => throw UnimplementedError();
 }
 
-class Paused extends VideoPlayerState {
-  const Paused(VideoPlayerController controller) : super(controller);
+class VideoPlayerSuccess extends VideoPlayerState {
+  VideoPlayerSuccess(this.controller, this.controllerValue);
+
+  final VideoPlayerValue controllerValue;
+  final VideoPlayerController controller;
+
+  @override
+  List<Object> get props => [controllerValue, controller];
 }
 
-class Loading extends VideoPlayerState {
-  const Loading(VideoPlayerController controller) : super(controller);
-}
-
-class Finished extends VideoPlayerState {
-  const Finished(VideoPlayerController controller) : super(controller);
+class VideoPlayerFailure extends VideoPlayerState {
+  @override
+  List<Object> get props => throw UnimplementedError();
 }
