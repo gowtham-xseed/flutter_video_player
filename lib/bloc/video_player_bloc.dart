@@ -12,10 +12,11 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   VideoPlayerBloc({@required VideoPlayerController controller})
       : assert(controller != null),
         _controller = controller {
-    _controller.addListener(() {
-      print('Video Player Listen - ' + _controller.value.position.toString());
-      add(ProgresUpdated(_controller.value));
-    });
+    _controller.addListener(controllerCallBackListener);
+  }
+
+  void controllerCallBackListener() {
+    add(ProgresUpdated(_controller.value));
   }
 
   final VideoPlayerController _controller;
@@ -32,7 +33,7 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
     } else if (event is ProgresUpdated) {
       yield* _mapProgresUpdatedToState(event);
     } else if (event is VideoPlayerSeeked) {
-      yield* _mapSeekToRelativePositionToState(event);
+      yield* _mapSeekedToState(event);
     }
   }
 
@@ -52,7 +53,7 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
     yield VideoPlayerSuccess(_controller, _controller.value);
   }
 
-  Stream<VideoPlayerState> _mapSeekToRelativePositionToState(
+  Stream<VideoPlayerState> _mapSeekedToState(
       VideoPlayerSeeked event) async* {
     _controller.seekTo(Duration(seconds: event.position.toInt()));
 
@@ -61,7 +62,7 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
 
   @override
   Future<void> close() {
-    _controller.removeListener(() {});
+    _controller.removeListener(controllerCallBackListener);
     return super.close();
   }
 }

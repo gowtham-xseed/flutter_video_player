@@ -1,17 +1,14 @@
 part of 'video_player_bloc.dart';
 
 @immutable
-abstract class VideoPlayerState extends Equatable {}
-
-class VideoPlayerInitial extends VideoPlayerState {
+abstract class VideoPlayerState extends Equatable {
   @override
-  List<Object> get props => throw UnimplementedError();
+  List<Object> get props => [];
 }
 
-class VideoPlayerLoading extends VideoPlayerState {
-  @override
-  List<Object> get props => throw UnimplementedError();
-}
+class VideoPlayerInitial extends VideoPlayerState {}
+
+class VideoPlayerLoading extends VideoPlayerState {}
 
 class VideoPlayerSuccess extends VideoPlayerState {
   VideoPlayerSuccess(this.controller, this.controllerValue);
