@@ -34,3 +34,9 @@ class VideoPlayerFullScreenToggled extends VideoPlayerEvent {
 
   List<Object> get props => [];
 }
+
+class VideoPlayerControlsToggled extends VideoPlayerEvent {
+  VideoPlayerControlsToggled();
+
+  List<Object> get props => [];
+}

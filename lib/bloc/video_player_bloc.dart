@@ -18,6 +18,12 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
     _controller.addListener(controllerCallBackListener);
   }
 
+  void initialControlsTimer() {
+    Timer(const Duration(seconds: 3), () {
+      add(VideoPlayerControlsToggled());
+    });
+  }
+
   void controllerCallBackListener() {
     if (_controller.value.hasError) {
       add(VideoPlayerErrorOccured());
@@ -45,6 +51,8 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
       yield* _mapVideoPlayerErrorOccuredToState(event);
     } else if (event is VideoPlayerFullScreenToggled) {
       yield* _mapVideoPlayerFullScreenToggledToState(event);
+    } else if (event is VideoPlayerControlsToggled) {
+      yield* _mapControlsToggledToState();
     }
   }
 
@@ -56,29 +64,31 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
       } else {
         _controller.play();
       }
-
+      final currentState = (state as VideoPlayerSuccess);
       yield VideoPlayerSuccess(_controller, _controller.value,
-          (state as VideoPlayerSuccess).isFullScreen);
+          currentState.isFullScreen, currentState.showControls);
     } else if (state is VideoPlayerInitial) {
+      initialControlsTimer();
       _controller.play();
-      yield VideoPlayerSuccess(_controller, _controller.value, false);
+      yield VideoPlayerSuccess(_controller, _controller.value, false, true);
     }
   }
 
   Stream<VideoPlayerState> _mapProgresUpdatedToState(
       ProgresUpdated event) async* {
     if (state is VideoPlayerSuccess) {
+      final currentState = (state as VideoPlayerSuccess);
       yield VideoPlayerSuccess(_controller, event.position,
-          (state as VideoPlayerSuccess).isFullScreen);
+          currentState.isFullScreen, currentState.showControls);
     }
   }
 
   Stream<VideoPlayerState> _mapSeekedToState(VideoPlayerSeeked event) async* {
     if (state is VideoPlayerSuccess) {
       _controller.seekTo(Duration(seconds: event.position.toInt()));
-
+      final currentState = (state as VideoPlayerSuccess);
       yield VideoPlayerSuccess(_controller, _controller.value,
-          (state as VideoPlayerSuccess).isFullScreen);
+          currentState.isFullScreen, currentState.showControls);
     }
   }
 
@@ -90,9 +100,22 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   Stream<VideoPlayerState> _mapVideoPlayerFullScreenToggledToState(
       VideoPlayerFullScreenToggled event) async* {
     if (state is VideoPlayerSuccess) {
+      final currentState = (state as VideoPlayerSuccess);
       yield VideoPlayerSuccess(_controller, _controller.value,
-          !(state as VideoPlayerSuccess).isFullScreen,
+          !currentState.isFullScreen, currentState.showControls,
           isFullScreenChanged: true);
+    }
+  }
+
+  Stream<VideoPlayerState> _mapControlsToggledToState() async* {
+    if (state is VideoPlayerSuccess) {
+      final currentState = (state as VideoPlayerSuccess);
+      yield VideoPlayerSuccess(
+        _controller,
+        _controller.value,
+        currentState.isFullScreen,
+        !currentState.showControls,
+      );
     }
   }
 

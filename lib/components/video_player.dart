@@ -49,7 +49,12 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
           children: <Widget>[
             Container(),
             Center(
-              child: VideoPlayer(state.controller),
+              child: GestureDetector(
+                  onTap: () {
+                    BlocProvider.of<VideoPlayerBloc>(context)
+                        .add(VideoPlayerControlsToggled());
+                  },
+                  child: VideoPlayer(state.controller)),
             ),
             Container(),
             YoutubeSkin()
