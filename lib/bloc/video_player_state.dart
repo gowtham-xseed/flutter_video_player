@@ -22,5 +22,5 @@ class VideoPlayerSuccess extends VideoPlayerState {
 
 class VideoPlayerFailure extends VideoPlayerState {
   @override
-  List<Object> get props => throw UnimplementedError();
+  List<Object> get props => [];
 }

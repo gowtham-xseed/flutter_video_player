@@ -43,27 +43,25 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
                 child: VideoPlayer(state.controller),
               ),
               Container(),
-              YoutubeSkin(),
-              // Align(
-              //   alignment: Alignment.bottomRight,
-              //   child: IconButton(
-              //     icon: Icon(Icons.fullscreen, color: Colors.white),
-              //     onPressed: () async {
-              //       await _pushFullScreenWidget(context, videoPlayerBloc);
-              //       //  await _popFullScreenWidget(context);
-              //     },
-              //   ),
-              // ),
+              YoutubeSkin()
             ],
           ));
+        } else if (state is VideoPlayerFailure) {
+          return Container(
+            color: Colors.black,
+            child: IconButton(
+              icon: Icon(Icons.warning, color: Colors.white, size: 40),
+              onPressed: () {},
+            ),
+          );
         } else {
           return Container(
             color: Colors.black,
             child: IconButton(
               icon: Icon(Icons.play_arrow, color: Colors.white, size: 60),
               onPressed: () {
-                // BlocProvider.of<VideoPlayerBloc>(context)
-                //     .add(VideoPlayerToggled());
+                BlocProvider.of<VideoPlayerBloc>(context)
+                    .add(VideoPlayerToggled());
               },
             ),
           );

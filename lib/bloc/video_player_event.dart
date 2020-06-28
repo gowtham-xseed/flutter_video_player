@@ -6,7 +6,15 @@ abstract class VideoPlayerEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class VideoPlayerToggled extends VideoPlayerEvent {}
+class VideoPlayerToggled extends VideoPlayerEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class VideoPlayerErrorOccured extends VideoPlayerEvent {
+  @override
+  List<Object> get props => [];
+}
 
 class ProgresUpdated extends VideoPlayerEvent {
   ProgresUpdated(this.position);

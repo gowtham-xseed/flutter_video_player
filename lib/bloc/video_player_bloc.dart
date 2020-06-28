@@ -12,11 +12,18 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   VideoPlayerBloc({@required VideoPlayerController controller})
       : assert(controller != null),
         _controller = controller {
+    if (!_controller.value.initialized) {
+      _controller.initialize();
+    }
     _controller.addListener(controllerCallBackListener);
   }
 
   void controllerCallBackListener() {
-    add(ProgresUpdated(_controller.value));
+    if (_controller.value.hasError) {
+      add(VideoPlayerErrorOccured());
+    } else {
+      add(ProgresUpdated(_controller.value));
+    }
   }
 
   final VideoPlayerController _controller;
@@ -34,6 +41,8 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
       yield* _mapProgresUpdatedToState(event);
     } else if (event is VideoPlayerSeeked) {
       yield* _mapSeekedToState(event);
+    } else if (event is VideoPlayerErrorOccured) {
+      yield* _mapVideoPlayerErrorOccuredToState(event);
     }
   }
 
@@ -49,15 +58,19 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   }
 
   Stream<VideoPlayerState> _mapProgresUpdatedToState(
-      VideoPlayerEvent event) async* {
-    yield VideoPlayerSuccess(_controller, _controller.value);
+      ProgresUpdated event) async* {
+    yield VideoPlayerSuccess(_controller, event.position);
   }
 
-  Stream<VideoPlayerState> _mapSeekedToState(
-      VideoPlayerSeeked event) async* {
+  Stream<VideoPlayerState> _mapSeekedToState(VideoPlayerSeeked event) async* {
     _controller.seekTo(Duration(seconds: event.position.toInt()));
 
     yield VideoPlayerSuccess(_controller, _controller.value);
+  }
+
+  Stream<VideoPlayerState> _mapVideoPlayerErrorOccuredToState(
+      VideoPlayerErrorOccured event) async* {
+    yield VideoPlayerFailure();
   }
 
   @override
