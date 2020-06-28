@@ -28,3 +28,9 @@ class VideoPlayerSeeked extends VideoPlayerEvent {
   final double position;
   List<Object> get props => [position];
 }
+
+class VideoPlayerFullScreenToggled extends VideoPlayerEvent {
+  VideoPlayerFullScreenToggled();
+
+  List<Object> get props => [];
+}

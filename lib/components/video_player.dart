@@ -31,43 +31,51 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
     );
   }
 
-  BlocBuilder _buildPlayerWithControls() {
-    return BlocBuilder<VideoPlayerBloc, VideoPlayerState>(
-      builder: (context, state) {
-        if (state is VideoPlayerSuccess) {
-          return Container(
-              child: Stack(
-            children: <Widget>[
-              Container(),
-              Center(
-                child: VideoPlayer(state.controller),
-              ),
-              Container(),
-              YoutubeSkin()
-            ],
-          ));
-        } else if (state is VideoPlayerFailure) {
-          return Container(
-            color: Colors.black,
-            child: IconButton(
-              icon: Icon(Icons.warning, color: Colors.white, size: 40),
-              onPressed: () {},
-            ),
-          );
+  BlocConsumer _buildPlayerWithControls() {
+    return BlocConsumer<VideoPlayerBloc, VideoPlayerState>(
+        listener: (BuildContext context, VideoPlayerState state) {
+      if (state is VideoPlayerSuccess && state.isFullScreenChanged == true) {
+        if (state.isFullScreen) {
+          _pushFullScreenWidget(
+              context, BlocProvider.of<VideoPlayerBloc>(context));
         } else {
-          return Container(
-            color: Colors.black,
-            child: IconButton(
-              icon: Icon(Icons.play_arrow, color: Colors.white, size: 60),
-              onPressed: () {
-                BlocProvider.of<VideoPlayerBloc>(context)
-                    .add(VideoPlayerToggled());
-              },
-            ),
-          );
+          _popFullScreenWidget(context);
         }
-      },
-    );
+      }
+    }, builder: (context, state) {
+      if (state is VideoPlayerSuccess) {
+        return Container(
+            child: Stack(
+          children: <Widget>[
+            Container(),
+            Center(
+              child: VideoPlayer(state.controller),
+            ),
+            Container(),
+            YoutubeSkin()
+          ],
+        ));
+      } else if (state is VideoPlayerFailure) {
+        return Container(
+          color: Colors.black,
+          child: IconButton(
+            icon: Icon(Icons.warning, color: Colors.white, size: 40),
+            onPressed: () {},
+          ),
+        );
+      } else {
+        return Container(
+          color: Colors.black,
+          child: IconButton(
+            icon: Icon(Icons.play_arrow, color: Colors.white, size: 60),
+            onPressed: () {
+              BlocProvider.of<VideoPlayerBloc>(context)
+                  .add(VideoPlayerToggled());
+            },
+          ),
+        );
+      }
+    });
   }
 
   double _calculateAspectRatio(BuildContext context) {
@@ -113,21 +121,20 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
       Animation<double> animation,
       Animation<double> secondaryAnimation,
       VideoPlayerBloc videoPlayerBloc) {
-    // return AnimatedBuilder(
-    //   animation: animation,
-    //   builder: (BuildContext context, Widget child) {
-    //     return BlocProvider(
-    //         create: (context) =>
-    //             VideoPlayerBloc(controller: videoPlayerBloc.state.controller),
-    //         child: Scaffold(
-    //           resizeToAvoidBottomPadding: false,
-    //           body: Container(
-    //             alignment: Alignment.center,
-    //             color: Colors.black,
-    //             child: FlutterVideoPlayerLayout(),
-    //           ),
-    //         ));
-    //   },
-    // );
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (BuildContext context, Widget child) {
+        return BlocProvider.value(
+            value: videoPlayerBloc,
+            child: Scaffold(
+              resizeToAvoidBottomPadding: false,
+              body: Container(
+                alignment: Alignment.center,
+                color: Colors.black,
+                child: FlutterVideoPlayerLayout(),
+              ),
+            ));
+      },
+    );
   }
 }

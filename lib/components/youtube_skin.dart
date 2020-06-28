@@ -116,7 +116,7 @@ class YoutubeSkin extends StatelessWidget {
                       color: iconColor,
                     ),
                     onPressed: () {
-                      // chewieController.toggleFullScreen();
+                      videoPlayerBloc.add(VideoPlayerFullScreenToggled());
                     },
                   ),
                   SizedBox(
