@@ -218,7 +218,7 @@ packages:
     source: hosted
     version: "0.10.11+1"
   video_player_platform_interface:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: video_player_platform_interface
       url: "https://pub.dartlang.org"
