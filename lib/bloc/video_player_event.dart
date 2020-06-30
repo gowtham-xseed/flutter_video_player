@@ -40,3 +40,16 @@ class VideoPlayerControlsToggled extends VideoPlayerEvent {
 
   List<Object> get props => [];
 }
+
+class VideoPlayerControlsHidden extends VideoPlayerEvent {
+  VideoPlayerControlsHidden();
+
+  List<Object> get props => [];
+}
+
+class VideoPlayerPanned extends VideoPlayerEvent {
+  VideoPlayerPanned(this.isForwardPan);
+  final bool isForwardPan;
+
+  List<Object> get props => [];
+}

@@ -44,22 +44,33 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
       }
     }, builder: (context, state) {
       if (state is VideoPlayerSuccess) {
-        return Container(
-            child: Stack(
-          children: <Widget>[
-            Container(),
-            Center(
-              child: GestureDetector(
-                  onTap: () {
-                    BlocProvider.of<VideoPlayerBloc>(context)
-                        .add(VideoPlayerControlsToggled());
-                  },
-                  child: VideoPlayer(state.controller)),
-            ),
-            Container(),
-            YoutubeSkin()
-          ],
-        ));
+        return GestureDetector(
+          onPanUpdate: (details) {
+            if (details.delta.dx > 0) {
+              BlocProvider.of<VideoPlayerBloc>(context)
+                  .add(VideoPlayerPanned(true));
+            } else {
+              BlocProvider.of<VideoPlayerBloc>(context)
+                  .add(VideoPlayerPanned(false));
+            }
+          },
+          child: Container(
+              child: Stack(
+            children: <Widget>[
+              Container(),
+              Center(
+                child: GestureDetector(
+                    onTap: () {
+                      BlocProvider.of<VideoPlayerBloc>(context)
+                          .add(VideoPlayerControlsToggled());
+                    },
+                    child: VideoPlayer(state.controller)),
+              ),
+              Container(),
+              YoutubeSkin()
+            ],
+          )),
+        );
       } else if (state is VideoPlayerFailure) {
         return Container(
           color: Colors.black,

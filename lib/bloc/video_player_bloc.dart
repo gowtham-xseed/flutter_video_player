@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:math' as math;
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
@@ -17,6 +17,7 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
     }
     _controller.addListener(controllerCallBackListener);
   }
+  Timer _timer;
 
   void initialControlsTimer() {
     Timer(const Duration(seconds: 3), () {
@@ -53,6 +54,10 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
       yield* _mapVideoPlayerFullScreenToggledToState(event);
     } else if (event is VideoPlayerControlsToggled) {
       yield* _mapControlsToggledToState();
+    } else if (event is VideoPlayerPanned) {
+      yield* _mapControlsPannedToState(event);
+    } else if (event is VideoPlayerControlsHidden) {
+      yield* _mapControlsHiddenToState();
     }
   }
 
@@ -110,12 +115,43 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   Stream<VideoPlayerState> _mapControlsToggledToState() async* {
     if (state is VideoPlayerSuccess) {
       final currentState = (state as VideoPlayerSuccess);
+      if (!currentState.showControls) {
+        if (_timer.isActive) {
+          _timer.cancel();
+        }
+        _timer = Timer(Duration(seconds: 3), () {
+          add(VideoPlayerControlsHidden());
+        });
+      }
       yield VideoPlayerSuccess(
         _controller,
         _controller.value,
         currentState.isFullScreen,
         !currentState.showControls,
       );
+    }
+  }
+
+  Stream<VideoPlayerState> _mapControlsHiddenToState() async* {
+    if (state is VideoPlayerSuccess) {
+      final currentState = (state as VideoPlayerSuccess);
+      yield VideoPlayerSuccess(
+        _controller,
+        _controller.value,
+        currentState.isFullScreen,
+        false,
+      );
+    }
+  }
+
+  Stream<VideoPlayerState> _mapControlsPannedToState(
+      VideoPlayerPanned event) async* {
+    if (state is VideoPlayerSuccess) {
+      final end = _controller.value.duration.inMilliseconds;
+      final skip = (_controller.value.position +
+              Duration(seconds: event.isForwardPan ? .5.round() : -5.round()))
+          .inMilliseconds;
+      _controller.seekTo(Duration(milliseconds: math.min(skip, end)));
     }
   }
 
