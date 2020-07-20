@@ -21,117 +21,115 @@ class YoutubeSkin extends StatelessWidget {
         builder: (context, state) {
       if (state is VideoPlayerSuccess) {
         if (state.showControls) {
-          return Material(
-            child: InkWell(
-              onTap: () {
-                BlocProvider.of<VideoPlayerBloc>(context)
-                    .add(VideoPlayerControlsToggled());
-              },
-              child: Container(
-                  child: Column(
-                children: <Widget>[
-                  Spacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Spacer(),
-                      GestureDetector(
-                          onTap: () {
-                            videoPlayerBloc.add(VideoPlayerSeeked(state
-                                    .controllerValue.position.inSeconds
-                                    .toDouble() -
-                                10));
-                          },
-                          child: Icon(
-                            Icons.fast_rewind,
-                            size: 35,
-                            color: iconColor,
-                          )),
-                      Spacer(),
-                      IconButton(
-                        key: Key("video-player-play-pause-button"),
-                        icon: Icon(
-                          (state.controllerValue.isPlaying)
-                              ? Icons.pause
-                              : Icons.play_arrow,
-                          size: 35,
-                          color: iconColor,
-                        ),
-                        onPressed: () {
-                          videoPlayerBloc.add(VideoPlayerToggled());
-                        },
-                      ),
-                      Spacer(),
-                      GestureDetector(
+          return InkWell(
+            onTap: () {
+              BlocProvider.of<VideoPlayerBloc>(context)
+                  .add(VideoPlayerControlsToggled());
+            },
+            child: Container(
+                child: Column(
+              children: <Widget>[
+                Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Spacer(),
+                    GestureDetector(
                         onTap: () {
                           videoPlayerBloc.add(VideoPlayerSeeked(state
                                   .controllerValue.position.inSeconds
-                                  .toDouble() +
+                                  .toDouble() -
                               10));
                         },
                         child: Icon(
-                          Icons.fast_forward,
+                          Icons.fast_rewind,
                           size: 35,
                           color: iconColor,
-                        ),
+                        )),
+                    Spacer(),
+                    IconButton(
+                      key: Key("video-player-play-pause-button"),
+                      icon: Icon(
+                        (state.controllerValue.isPlaying)
+                            ? Icons.pause
+                            : Icons.play_arrow,
+                        size: 35,
+                        color: iconColor,
                       ),
-                      Spacer(),
-                    ],
-                  ),
-                  Spacer(),
-                  Row(
-                    children: <Widget>[
-                      SizedBox(
-                        width: 20,
+                      onPressed: () {
+                        videoPlayerBloc.add(VideoPlayerToggled());
+                      },
+                    ),
+                    Spacer(),
+                    GestureDetector(
+                      onTap: () {
+                        videoPlayerBloc.add(VideoPlayerSeeked(state
+                                .controllerValue.position.inSeconds
+                                .toDouble() +
+                            10));
+                      },
+                      child: Icon(
+                        Icons.fast_forward,
+                        size: 35,
+                        color: iconColor,
                       ),
-                      Text(
-                        formatDuration(state.controllerValue.position) +
-                            ' / ' +
-                            formatDuration(state.controllerValue.duration),
-                        style: TextStyle(color: iconColor),
+                    ),
+                    Spacer(),
+                  ],
+                ),
+                Spacer(),
+                Row(
+                  children: <Widget>[
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      formatDuration(state.controllerValue.position) +
+                          ' / ' +
+                          formatDuration(state.controllerValue.duration),
+                      style: TextStyle(color: iconColor),
+                    ),
+                    Spacer(),
+                    IconButton(
+                      icon: Icon(
+                        Icons.fullscreen,
+                        color: iconColor,
                       ),
-                      Spacer(),
-                      IconButton(
-                        icon: Icon(
-                          Icons.fullscreen,
-                          color: iconColor,
-                        ),
-                        onPressed: () {
-                          videoPlayerBloc.add(VideoPlayerFullScreenToggled());
-                        },
-                      ),
-                      SizedBox(
-                        width: 20,
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 45, vertical: 8.0),
-                          child: Container(
-                            height: 20,
-                            child: Slider(
-                              activeColor: Colors.red,
-                              min: 0.0,
-                              max: state.controllerValue.duration.inSeconds
-                                  .toDouble(),
-                              value: state.controllerValue.position.inSeconds
-                                  .toDouble(),
-                              onChanged: (double value) {
-                                videoPlayerBloc.add((VideoPlayerSeeked(value)));
-                              },
-                            ),
+                      onPressed: () {
+                        videoPlayerBloc.add(VideoPlayerFullScreenToggled());
+                      },
+                    ),
+                    SizedBox(
+                      width: 20,
+                    )
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 45, vertical: 8.0),
+                        child: Container(
+                          height: 20,
+                          child: Slider(
+                            activeColor: Colors.red,
+                            min: 0.0,
+                            max: state.controllerValue.duration.inSeconds
+                                .toDouble(),
+                            value: state.controllerValue.position.inSeconds
+                                .toDouble(),
+                            onChanged: (double value) {
+                              videoPlayerBloc.add((VideoPlayerSeeked(value)));
+                            },
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                ],
-              )),
-            ),
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            )),
           );
         } else {
           return Container(

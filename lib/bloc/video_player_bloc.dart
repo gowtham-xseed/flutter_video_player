@@ -116,7 +116,7 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
     if (state is VideoPlayerSuccess) {
       final currentState = (state as VideoPlayerSuccess);
       if (!currentState.showControls) {
-        if (_timer.isActive) {
+        if (_timer != null && _timer.isActive) {
           _timer.cancel();
         }
         _timer = Timer(Duration(seconds: 3), () {
