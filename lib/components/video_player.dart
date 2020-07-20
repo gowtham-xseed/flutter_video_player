@@ -6,18 +6,22 @@ import 'package:flutter_video_player/components/youtube_skin.dart';
 import 'package:video_player/video_player.dart';
 
 class FlutterVideoPlayer extends StatelessWidget {
-  FlutterVideoPlayer({this.videoPlayerController});
+  FlutterVideoPlayer(this.videoPlayerController, {this.placeholderImage});
   final VideoPlayerController videoPlayerController;
+  final String placeholderImage;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (context) => VideoPlayerBloc(controller: videoPlayerController),
-        child: FlutterVideoPlayerLayout());
+        child: FlutterVideoPlayerLayout(placeholderImage: placeholderImage));
   }
 }
 
 class FlutterVideoPlayerLayout extends StatelessWidget {
+  FlutterVideoPlayerLayout({this.placeholderImage});
+  final String placeholderImage;
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -81,7 +85,12 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
         );
       } else {
         return Container(
-          color: Colors.black,
+          decoration: BoxDecoration(
+              color: Colors.grey,
+              image: placeholderImage != null
+                  ? DecorationImage(
+                      image: NetworkImage(placeholderImage), fit: BoxFit.cover)
+                  : null),
           child: IconButton(
             icon: Icon(Icons.play_arrow, color: Colors.white, size: 60),
             onPressed: () {
