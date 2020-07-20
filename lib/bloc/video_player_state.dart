@@ -16,7 +16,7 @@ class VideoPlayerSuccess extends VideoPlayerState {
       {this.isFullScreenChanged});
 
   final VideoPlayerValue controllerValue;
-  final VideoPlayerController controller;
+  final FlutterVideoPlayerController controller;
   final bool isFullScreen;
   final bool isFullScreenChanged;
   final bool showControls;

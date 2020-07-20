@@ -11,6 +11,7 @@ class VideoApp extends StatefulWidget {
 
 class _VideoAppState extends State<VideoApp> {
   VideoPlayerController _controller;
+  FlutterVideoPlayerController flutterVideoPlayerController;
 
   @override
   void initState() {
@@ -21,6 +22,8 @@ class _VideoAppState extends State<VideoApp> {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
       });
+
+    flutterVideoPlayerController = FlutterVideoPlayerController(_controller);
   }
 
   @override
@@ -30,19 +33,7 @@ class _VideoAppState extends State<VideoApp> {
       home: Scaffold(
         body: Center(
           child: FlutterVideoPlayer(
-            _controller,
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              _controller.value.isPlaying
-                  ? _controller.pause()
-                  : _controller.play();
-            });
-          },
-          child: Icon(
-            _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+            flutterVideoPlayerController,
           ),
         ),
       ),

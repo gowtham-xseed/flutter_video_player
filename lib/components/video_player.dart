@@ -3,11 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_video_player/bloc/video_player_bloc.dart';
 import 'package:flutter_video_player/components/youtube_skin.dart';
+import 'package:flutter_video_player/controller.dart';
 import 'package:video_player/video_player.dart';
 
 class FlutterVideoPlayer extends StatelessWidget {
   FlutterVideoPlayer(this.videoPlayerController, {this.placeholderImage});
-  final VideoPlayerController videoPlayerController;
+  final FlutterVideoPlayerController videoPlayerController;
   final String placeholderImage;
 
   @override
@@ -68,7 +69,7 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
                       BlocProvider.of<VideoPlayerBloc>(context)
                           .add(VideoPlayerControlsToggled());
                     },
-                    child: VideoPlayer(state.controller)),
+                    child: VideoPlayer(state.controller.videoPlayerController)),
               ),
               Container(),
               YoutubeSkin()

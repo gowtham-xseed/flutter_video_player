@@ -5,19 +5,24 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:video_player/video_player.dart';
 
+import '../controller.dart';
+
 part 'video_player_event.dart';
 part 'video_player_state.dart';
 
 class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
-  VideoPlayerBloc({@required VideoPlayerController controller})
+  VideoPlayerBloc({@required FlutterVideoPlayerController controller})
       : assert(controller != null),
-        _controller = controller {
-    if (!_controller.value.initialized) {
-      _controller.initialize();
+        _flutterVideoPlayerController = controller {
+    if (!_flutterVideoPlayerController
+        .videoPlayerController.value.initialized) {
+      _flutterVideoPlayerController.videoPlayerController.initialize();
     }
-    _controller.addListener(controllerCallBackListener);
+    _flutterVideoPlayerController.videoPlayerController
+        .addListener(controllerCallBackListener);
   }
   Timer _timer;
+  final FlutterVideoPlayerController _flutterVideoPlayerController;
 
   void initialControlsTimer() {
     Timer(const Duration(seconds: 3), () {
@@ -26,14 +31,13 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   }
 
   void controllerCallBackListener() {
-    if (_controller.value.hasError) {
+    if (_flutterVideoPlayerController.videoPlayerController.value.hasError) {
       add(VideoPlayerErrorOccured());
     } else {
-      add(ProgresUpdated(_controller.value));
+      add(ProgresUpdated(
+          _flutterVideoPlayerController.videoPlayerController.value));
     }
   }
-
-  final VideoPlayerController _controller;
 
   @override
   VideoPlayerState get initialState => VideoPlayerInitial();
@@ -64,18 +68,25 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   Stream<VideoPlayerState> _mapVideoPlayerToggledToState(
       VideoPlayerEvent event) async* {
     if (state is VideoPlayerSuccess) {
-      if (_controller.value.isPlaying) {
-        _controller.pause();
+      if (_flutterVideoPlayerController.videoPlayerController.value.isPlaying) {
+        _flutterVideoPlayerController.videoPlayerController.pause();
       } else {
-        _controller.play();
+        _flutterVideoPlayerController.videoPlayerController.play();
       }
       final currentState = (state as VideoPlayerSuccess);
-      yield VideoPlayerSuccess(_controller, _controller.value,
-          currentState.isFullScreen, currentState.showControls);
+      yield VideoPlayerSuccess(
+          _flutterVideoPlayerController,
+          _flutterVideoPlayerController.videoPlayerController.value,
+          currentState.isFullScreen,
+          currentState.showControls);
     } else if (state is VideoPlayerInitial) {
       initialControlsTimer();
-      _controller.play();
-      yield VideoPlayerSuccess(_controller, _controller.value, false, true);
+      _flutterVideoPlayerController.videoPlayerController.play();
+      yield VideoPlayerSuccess(
+          _flutterVideoPlayerController,
+          _flutterVideoPlayerController.videoPlayerController.value,
+          false,
+          true);
     }
   }
 
@@ -83,17 +94,21 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
       ProgresUpdated event) async* {
     if (state is VideoPlayerSuccess) {
       final currentState = (state as VideoPlayerSuccess);
-      yield VideoPlayerSuccess(_controller, event.position,
+      yield VideoPlayerSuccess(_flutterVideoPlayerController, event.position,
           currentState.isFullScreen, currentState.showControls);
     }
   }
 
   Stream<VideoPlayerState> _mapSeekedToState(VideoPlayerSeeked event) async* {
     if (state is VideoPlayerSuccess) {
-      _controller.seekTo(Duration(seconds: event.position.toInt()));
+      _flutterVideoPlayerController.videoPlayerController
+          .seekTo(Duration(seconds: event.position.toInt()));
       final currentState = (state as VideoPlayerSuccess);
-      yield VideoPlayerSuccess(_controller, _controller.value,
-          currentState.isFullScreen, currentState.showControls);
+      yield VideoPlayerSuccess(
+          _flutterVideoPlayerController,
+          _flutterVideoPlayerController.videoPlayerController.value,
+          currentState.isFullScreen,
+          currentState.showControls);
     }
   }
 
@@ -106,8 +121,11 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
       VideoPlayerFullScreenToggled event) async* {
     if (state is VideoPlayerSuccess) {
       final currentState = (state as VideoPlayerSuccess);
-      yield VideoPlayerSuccess(_controller, _controller.value,
-          !currentState.isFullScreen, currentState.showControls,
+      yield VideoPlayerSuccess(
+          _flutterVideoPlayerController,
+          _flutterVideoPlayerController.videoPlayerController.value,
+          !currentState.isFullScreen,
+          currentState.showControls,
           isFullScreenChanged: true);
     }
   }
@@ -124,8 +142,8 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
         });
       }
       yield VideoPlayerSuccess(
-        _controller,
-        _controller.value,
+        _flutterVideoPlayerController,
+        _flutterVideoPlayerController.videoPlayerController.value,
         currentState.isFullScreen,
         !currentState.showControls,
       );
@@ -136,8 +154,8 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
     if (state is VideoPlayerSuccess) {
       final currentState = (state as VideoPlayerSuccess);
       yield VideoPlayerSuccess(
-        _controller,
-        _controller.value,
+        _flutterVideoPlayerController,
+        _flutterVideoPlayerController.videoPlayerController.value,
         currentState.isFullScreen,
         false,
       );
@@ -147,17 +165,21 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   Stream<VideoPlayerState> _mapControlsPannedToState(
       VideoPlayerPanned event) async* {
     if (state is VideoPlayerSuccess) {
-      final end = _controller.value.duration.inMilliseconds;
-      final skip = (_controller.value.position +
+      final end = _flutterVideoPlayerController
+          .videoPlayerController.value.duration.inMilliseconds;
+      final skip = (_flutterVideoPlayerController
+                  .videoPlayerController.value.position +
               Duration(seconds: event.isForwardPan ? .5.round() : -5.round()))
           .inMilliseconds;
-      _controller.seekTo(Duration(milliseconds: math.min(skip, end)));
+      _flutterVideoPlayerController.videoPlayerController
+          .seekTo(Duration(milliseconds: math.min(skip, end)));
     }
   }
 
   @override
   Future<void> close() {
-    _controller.removeListener(controllerCallBackListener);
+    _flutterVideoPlayerController.videoPlayerController
+        .removeListener(controllerCallBackListener);
     return super.close();
   }
 }
