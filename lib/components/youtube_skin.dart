@@ -30,30 +30,6 @@ class YoutubeSkin extends StatelessWidget {
               child: Container(
                   child: Column(
                 children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        size: 35,
-                        color: iconColor,
-                      ),
-                      Spacer(),
-                      Icon(
-                        Icons.share,
-                        color: iconColor,
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Icon(
-                        Icons.cast_connected,
-                        color: iconColor,
-                      ),
-                      SizedBox(
-                        width: 20,
-                      )
-                    ],
-                  ),
                   Spacer(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -73,6 +49,7 @@ class YoutubeSkin extends StatelessWidget {
                           )),
                       Spacer(),
                       IconButton(
+                        key: Key("video-player-play-pause-button"),
                         icon: Icon(
                           (state.controllerValue.isPlaying)
                               ? Icons.pause

@@ -62,9 +62,68 @@ void main() {
         await tester.pump();
         expect(find.byType(CircularProgressIndicator), findsNothing);
         expect(find.byType(Slider), findsOneWidget);
+        // expect(find.byType(GestureDetector), findsNWidgets(2));
 
+        await tester.pumpAndSettle(const Duration(seconds: 5));
+      });
+
+      testWidgets('Widget Test - Video Player Success State - Button click',
+          (WidgetTester tester) async {
+        final VideoPlayerController controller =
+            VideoPlayerController.network('https://127.0.0.1');
+
+        await controller.initialize();
+        Widget widget = YoutubeSkin();
+        VideoPlayerBloc videoPlayerBloc =
+            VideoPlayerBloc(controller: controller);
+        await tester.pumpWidget(BlocProvider(
+            create: (context) => videoPlayerBloc,
+            child: MaterialApp(home: widget)));
+
+        await tester.pump();
+        expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+        expect(
+            find.byKey(Key("video-player-play-pause-button")), findsOneWidget);
+        await tester.tap(find.byKey(Key("video-player-play-pause-button")));
+
+        await tester.pump();
+        expect(find.byType(CircularProgressIndicator), findsNothing);
+        expect(find.byType(Slider), findsOneWidget);
+
+        await tester.pumpAndSettle(const Duration(seconds: 5));
+      });
+
+      testWidgets('Widget Test - VideoPlayerSeeked',
+          (WidgetTester tester) async {
+        final VideoPlayerController controller =
+            VideoPlayerController.network('https://127.0.0.1');
+
+        await controller.initialize();
+        Widget widget = YoutubeSkin();
+        VideoPlayerBloc videoPlayerBloc =
+            VideoPlayerBloc(controller: controller);
+        await tester.pumpWidget(BlocProvider(
+            create: (context) => videoPlayerBloc,
+            child: MaterialApp(home: widget)));
         videoPlayerBloc.add(VideoPlayerToggled());
 
+        await tester.pump();
+        Duration duration = controller.value.position;
+        videoPlayerBloc.add(
+            VideoPlayerSeeked(controller.value.duration.inSeconds.toDouble()));
+
+        VideoPlayerState videoPlayerState = videoPlayerBloc.state;
+        if (videoPlayerState is VideoPlayerSuccess) {
+          int a = videoPlayerState.controller.value.position.inSeconds;
+          print(a);
+        }
+
+        Duration newDuration = controller.value.position;
+        Duration du = controller.value.duration;
+        print(duration.inSeconds);
+        print(newDuration.inSeconds);
+        print(du.inSeconds);
         await tester.pumpAndSettle(const Duration(seconds: 5));
       });
     });
