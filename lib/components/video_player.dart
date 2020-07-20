@@ -3,12 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_video_player/bloc/video_player_bloc.dart';
 import 'package:flutter_video_player/components/youtube_skin.dart';
-import 'package:flutter_video_player/controller.dart';
+import 'package:flutter_video_player/flutter_video_player.dart';
 import 'package:video_player/video_player.dart';
 
 class FlutterVideoPlayer extends StatelessWidget {
   FlutterVideoPlayer(this.videoPlayerController, {this.placeholderImage});
-  final FlutterVideoPlayerController videoPlayerController;
+  final VideoPlayerController videoPlayerController;
   final String placeholderImage;
 
   @override
@@ -22,6 +22,8 @@ class FlutterVideoPlayer extends StatelessWidget {
 class FlutterVideoPlayerLayout extends StatelessWidget {
   FlutterVideoPlayerLayout({this.placeholderImage});
   final String placeholderImage;
+  FlutterVideoPlayerController flutterVideoPlayerController =
+      FlutterVideoPlayerController();
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +41,8 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
   BlocConsumer _buildPlayerWithControls() {
     return BlocConsumer<VideoPlayerBloc, VideoPlayerState>(
         listener: (BuildContext context, VideoPlayerState state) {
+      flutterVideoPlayerController.updateVideoPlayerStream(state);
+
       if (state is VideoPlayerSuccess && state.isFullScreenChanged == true) {
         if (state.isFullScreen) {
           _pushFullScreenWidget(
@@ -49,6 +53,11 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
       }
     }, builder: (context, state) {
       if (state is VideoPlayerSuccess) {
+        if (flutterVideoPlayerController != null &&
+            !flutterVideoPlayerController.isInitialized) {
+          flutterVideoPlayerController.initialize(state);
+        }
+
         return GestureDetector(
           onPanUpdate: (details) {
             if (details.delta.dx > 0) {
@@ -69,10 +78,10 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
                       BlocProvider.of<VideoPlayerBloc>(context)
                           .add(VideoPlayerControlsToggled());
                     },
-                    child: VideoPlayer(state.controller.videoPlayerController)),
+                    child: VideoPlayer(state.controller)),
               ),
               Container(),
-              YoutubeSkin()
+              YoutubeSkin(flutterVideoPlayerController)
             ],
           )),
         );
