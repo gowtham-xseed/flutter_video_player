@@ -55,7 +55,8 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
       if (state is VideoPlayerSuccess) {
         if (flutterVideoPlayerController != null &&
             !flutterVideoPlayerController.isInitialized) {
-          flutterVideoPlayerController.initialize(state);
+          flutterVideoPlayerController.initialize(
+              state, BlocProvider.of<VideoPlayerBloc>(context));
         }
 
         return GestureDetector(

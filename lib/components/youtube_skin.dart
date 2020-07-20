@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_video_player/bloc/video_player_bloc.dart';
 import 'package:flutter_video_player/flutter_video_player.dart';
 import 'package:flutter_video_player/utils/video_player.dart';
@@ -12,9 +11,6 @@ class YoutubeSkin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final VideoPlayerBloc videoPlayerBloc =
-        BlocProvider.of<VideoPlayerBloc>(context);
-
     return StreamBuilder(
         stream: flutterVideoPlayerController.videoPlayerStream.stream,
         builder: (context, streamData) {
@@ -24,8 +20,7 @@ class YoutubeSkin extends StatelessWidget {
             if (state.showControls) {
               return InkWell(
                 onTap: () {
-                  BlocProvider.of<VideoPlayerBloc>(context)
-                      .add(VideoPlayerControlsToggled());
+                  flutterVideoPlayerController.toggleControlsVisibily();
                 },
                 child: Container(
                     child: Column(
@@ -37,10 +32,10 @@ class YoutubeSkin extends StatelessWidget {
                         Spacer(),
                         GestureDetector(
                             onTap: () {
-                              videoPlayerBloc.add(VideoPlayerSeeked(state
+                              flutterVideoPlayerController.seekTo(state
                                       .controllerValue.position.inSeconds
                                       .toDouble() -
-                                  10));
+                                  10);
                             },
                             child: Icon(
                               Icons.fast_rewind,
@@ -58,16 +53,16 @@ class YoutubeSkin extends StatelessWidget {
                             color: iconColor,
                           ),
                           onPressed: () {
-                            videoPlayerBloc.add(VideoPlayerToggled());
+                            flutterVideoPlayerController.toggle();
                           },
                         ),
                         Spacer(),
                         GestureDetector(
                           onTap: () {
-                            videoPlayerBloc.add(VideoPlayerSeeked(state
+                            flutterVideoPlayerController.seekTo(state
                                     .controllerValue.position.inSeconds
                                     .toDouble() +
-                                10));
+                                10);
                           },
                           child: Icon(
                             Icons.fast_forward,
@@ -97,7 +92,7 @@ class YoutubeSkin extends StatelessWidget {
                             color: iconColor,
                           ),
                           onPressed: () {
-                            videoPlayerBloc.add(VideoPlayerFullScreenToggled());
+                            flutterVideoPlayerController.toggleFullScreen();
                           },
                         ),
                         SizedBox(
@@ -121,8 +116,7 @@ class YoutubeSkin extends StatelessWidget {
                                 value: state.controllerValue.position.inSeconds
                                     .toDouble(),
                                 onChanged: (double value) {
-                                  videoPlayerBloc
-                                      .add((VideoPlayerSeeked(value)));
+                                  flutterVideoPlayerController.seekTo(value);
                                 },
                               ),
                             ),
