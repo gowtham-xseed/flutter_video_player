@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_video_player/bloc/delegate.dart';
 import 'package:flutter_video_player/bloc/video_player_bloc.dart';
 import 'package:flutter_video_player/components/youtube_skin.dart';
 import 'package:flutter_video_player/flutter_video_player.dart';
@@ -13,7 +14,9 @@ class FlutterVideoPlayer extends StatelessWidget {
   FlutterVideoPlayer(this.videoPlayerController,
       {this.placeholderImage,
       this.customSkinRenderer,
-      this.playOnlyInFullScreen});
+      this.playOnlyInFullScreen}) {
+    BlocSupervisor.delegate = SimpleBlocDelegate();
+  }
   final VideoPlayerController videoPlayerController;
   final String placeholderImage;
   final CustomSkinRenderer customSkinRenderer;
@@ -53,6 +56,22 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
     );
   }
 
+  /**
+   *       if (previous is VideoPlayerSuccess && current is VideoPlayerSuccess) {
+        return ((previous.isFullScreen && !previous.isFullScreenChanged) ||
+            (!current.isFullScreen && current.isFullScreenChanged)  || 
+            
+            (!previous.isFullScreen && !previous.isFullScreenChanged) ||
+            (current.isFullScreen && current.isFullScreenChanged) ) ;
+      } else if (previous is VideoPlayerInitial &&
+          current is VideoPlayerSuccess) {
+        return true;
+      } else {
+        return false;
+      }
+    }, listener: (BuildContext context, VideoPlayerState state) {
+   */
+
   BlocConsumer _buildPlayerWithControls() {
     return BlocConsumer<VideoPlayerBloc, VideoPlayerState>(
         listenWhen: (previous, current) {
@@ -69,7 +88,7 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
           _pushFullScreenWidget(
               context, BlocProvider.of<VideoPlayerBloc>(context));
         } else {
-          // _popFullScreenWidget(context);
+          _popFullScreenWidget(context);
         }
       }
     }, builder: (context, state) {
@@ -157,7 +176,7 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
       DeviceOrientation.portraitUp,
     ]);
 
-    Navigator.of(context, rootNavigator: true).pop();
+    Navigator.maybePop(context);
   }
 
   Future<dynamic> _pushFullScreenWidget(
