@@ -6,22 +6,31 @@ import 'package:flutter_video_player/components/youtube_skin.dart';
 import 'package:flutter_video_player/flutter_video_player.dart';
 import 'package:video_player/video_player.dart';
 
+typedef CustomSkinRenderer = Widget Function(
+    FlutterVideoPlayerController flutterVideoPlayerController);
+
 class FlutterVideoPlayer extends StatelessWidget {
-  FlutterVideoPlayer(this.videoPlayerController, {this.placeholderImage});
+  FlutterVideoPlayer(this.videoPlayerController,
+      {this.placeholderImage, this.customSkinRenderer});
   final VideoPlayerController videoPlayerController;
   final String placeholderImage;
+  final CustomSkinRenderer customSkinRenderer;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (context) => VideoPlayerBloc(controller: videoPlayerController),
-        child: FlutterVideoPlayerLayout(placeholderImage: placeholderImage));
+        child: FlutterVideoPlayerLayout(
+            placeholderImage: placeholderImage,
+            customSkinRenderer: customSkinRenderer));
   }
 }
 
 class FlutterVideoPlayerLayout extends StatelessWidget {
-  FlutterVideoPlayerLayout({this.placeholderImage});
+  FlutterVideoPlayerLayout({this.placeholderImage, this.customSkinRenderer});
   final String placeholderImage;
+  final CustomSkinRenderer customSkinRenderer;
+
   FlutterVideoPlayerController flutterVideoPlayerController =
       FlutterVideoPlayerController();
 
@@ -82,7 +91,11 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
                     child: VideoPlayer(state.controller)),
               ),
               Container(),
-              YoutubeSkin(flutterVideoPlayerController)
+              if (customSkinRenderer != null) ...{
+                customSkinRenderer(flutterVideoPlayerController)
+              } else ...{
+                YoutubeSkin(flutterVideoPlayerController)
+              }
             ],
           )),
         );
@@ -97,17 +110,21 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
       } else {
         return Container(
           decoration: BoxDecoration(
-              color: Colors.grey,
+              color: Colors.black.withOpacity(0.5),
               image: placeholderImage != null
                   ? DecorationImage(
                       image: NetworkImage(placeholderImage), fit: BoxFit.cover)
                   : null),
-          child: IconButton(
-            icon: Icon(Icons.play_arrow, color: Colors.white, size: 60),
-            onPressed: () {
+          child: InkWell(
+            onTap: () {
               BlocProvider.of<VideoPlayerBloc>(context)
                   .add(VideoPlayerToggled());
             },
+            child: Image.asset(
+              'assets/images/play_with_baground.png',
+              height: 35,
+              width: 35,
+            ),
           ),
         );
       }
