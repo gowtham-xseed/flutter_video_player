@@ -76,8 +76,8 @@ class _VideoAppState extends State<VideoApp> {
                           },
                           child: Image.asset(
                             state.controllerValue.isPlaying
-                                ? 'assets/images/play.png'
-                                : 'assets/images/pause.png',
+                                ? 'assets/images/pause.png'
+                                : 'assets/images/play.png',
                             height: 15,
                             width: 15,
                           ),
