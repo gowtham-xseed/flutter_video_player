@@ -18,6 +18,8 @@ class FlutterVideoPlayer extends StatelessWidget {
   final String placeholderImage;
   final CustomSkinRenderer customSkinRenderer;
   final bool playOnlyInFullScreen;
+  FlutterVideoPlayerController flutterVideoPlayerController =
+      FlutterVideoPlayerController();
 
   @override
   Widget build(BuildContext context) {
@@ -25,130 +27,37 @@ class FlutterVideoPlayer extends StatelessWidget {
         create: (context) => VideoPlayerBloc(
             videoPlayerController: videoPlayerController,
             playOnlyInFullScreen: playOnlyInFullScreen || false),
-        child: FlutterVideoPlayerLayout(
-          placeholderImage: placeholderImage,
-          customSkinRenderer: customSkinRenderer,
-        ));
-  }
-}
+        child: Column(
+          children: <Widget>[
+            BlocConsumer<VideoPlayerBloc, VideoPlayerState>(
+                listenWhen: (previous, current) {
+              print('Listen Triggered ' +
+                  previous.hashCode.toString() +
+                  ' -> ' +
+                  current.hashCode.toString());
+              return previous.hashCode.toString() !=
+                  current.hashCode.toString();
+            }, listener: (BuildContext context, VideoPlayerState state) {
+              flutterVideoPlayerController.updateVideoPlayerStream(state);
 
-class FlutterVideoPlayerLayout extends StatelessWidget {
-  FlutterVideoPlayerLayout({this.placeholderImage, this.customSkinRenderer});
-  final String placeholderImage;
-  final CustomSkinRenderer customSkinRenderer;
-
-  FlutterVideoPlayerController flutterVideoPlayerController =
-      FlutterVideoPlayerController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        child: AspectRatio(
-          aspectRatio: _calculateAspectRatio(context),
-          child: _buildPlayerWithControls(),
-        ),
-      ),
-    );
-  }
-
-  BlocConsumer _buildPlayerWithControls() {
-    return BlocConsumer<VideoPlayerBloc, VideoPlayerState>(
-        listenWhen: (previous, current) {
-      print('Listen Triggered ' +
-          previous.hashCode.toString() +
-          ' -> ' +
-          current.hashCode.toString());
-      return previous.hashCode.toString() != current.hashCode.toString();
-    }, listener: (BuildContext context, VideoPlayerState state) {
-      flutterVideoPlayerController.updateVideoPlayerStream(state);
-
-      if (state is VideoPlayerSuccess && state.isFullScreenChanged == true) {
-        if (state.isFullScreen) {
-          _pushFullScreenWidget(
-              context, BlocProvider.of<VideoPlayerBloc>(context));
-        } else {
-          // _popFullScreenWidget(context);
-        }
-      }
-    }, builder: (context, state) {
-      if (state is VideoPlayerSuccess) {
-        if (flutterVideoPlayerController != null &&
-            !flutterVideoPlayerController.isInitialized) {
-          flutterVideoPlayerController.initialize(
-              state, BlocProvider.of<VideoPlayerBloc>(context));
-        }
-
-        return GestureDetector(
-          onPanUpdate: (details) {
-            if (details.delta.dx > 0) {
-              BlocProvider.of<VideoPlayerBloc>(context)
-                  .add(VideoPlayerPanned(true));
-            } else {
-              BlocProvider.of<VideoPlayerBloc>(context)
-                  .add(VideoPlayerPanned(false));
-            }
-          },
-          child: Container(
-              child: Stack(
-            children: <Widget>[
-              Container(),
-              Center(
-                child: GestureDetector(
-                    onTap: () {
-                      BlocProvider.of<VideoPlayerBloc>(context)
-                          .add(VideoPlayerControlsToggled());
-                    },
-                    child: VideoPlayer(state.controller)),
-              ),
-              Container(),
-              if (customSkinRenderer != null) ...{
-                customSkinRenderer(flutterVideoPlayerController)
-              } else ...{
-                YoutubeSkin(flutterVideoPlayerController)
+              if (state is VideoPlayerSuccess &&
+                  state.isFullScreenChanged == true) {
+                if (state.isFullScreen) {
+                  _pushFullScreenWidget(
+                      context, BlocProvider.of<VideoPlayerBloc>(context));
+                } else {
+                  _popFullScreenWidget(context);
+                }
               }
-            ],
-          )),
-        );
-      } else if (state is VideoPlayerFailure) {
-        return Container(
-          color: Colors.black,
-          child: IconButton(
-            icon: Icon(Icons.warning, color: Colors.white, size: 40),
-            onPressed: () {},
-          ),
-        );
-      } else {
-        return Container(
-          decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
-              image: placeholderImage != null
-                  ? DecorationImage(
-                      image: NetworkImage(placeholderImage), fit: BoxFit.cover)
-                  : null),
-          child: InkWell(
-            onTap: () {
-              BlocProvider.of<VideoPlayerBloc>(context)
-                  .add(VideoPlayerToggled());
-            },
-            child: Image.asset(
-              'assets/images/play_with_baground.png',
-              height: 35,
-              width: 35,
-            ),
-          ),
-        );
-      }
-    });
-  }
-
-  double _calculateAspectRatio(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final width = size.width;
-    final height = size.height;
-
-    return width > height ? width / height : height / width;
+            }, builder: (context, state) {
+              return SizedBox();
+            }),
+            FlutterVideoPlayerLayout(
+                placeholderImage: placeholderImage,
+                customSkinRenderer: customSkinRenderer,
+                flutterVideoPlayerController: flutterVideoPlayerController)
+          ],
+        ));
   }
 
   _popFullScreenWidget(BuildContext context) {
@@ -197,12 +106,123 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
                 alignment: Alignment.center,
                 color: Colors.black,
                 child: FlutterVideoPlayerLayout(
-                  placeholderImage: placeholderImage,
-                  customSkinRenderer: customSkinRenderer,
-                ),
+                    placeholderImage: placeholderImage,
+                    customSkinRenderer: customSkinRenderer,
+                    flutterVideoPlayerController: flutterVideoPlayerController),
               ),
             ));
       },
     );
+  }
+}
+
+class FlutterVideoPlayerLayout extends StatelessWidget {
+  FlutterVideoPlayerLayout(
+      {this.placeholderImage,
+      this.customSkinRenderer,
+      this.flutterVideoPlayerController});
+  final String placeholderImage;
+  final CustomSkinRenderer customSkinRenderer;
+  final FlutterVideoPlayerController flutterVideoPlayerController;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!flutterVideoPlayerController.isInitialized) {
+      flutterVideoPlayerController
+          .initialize(BlocProvider.of<VideoPlayerBloc>(context));
+    }
+    return Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        child: AspectRatio(
+          aspectRatio: _calculateAspectRatio(context),
+          child: _buildPlayerWithControls(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlayerWithControls() {
+    if (flutterVideoPlayerController != null) {
+      return StreamBuilder(
+          stream: flutterVideoPlayerController.videoPlayerStream.stream,
+          builder: (context, streamData) {
+            if (streamData != null && streamData.data != null) {
+              VideoPlayerSuccess state = streamData.data;
+              if (state is VideoPlayerSuccess) {
+                return GestureDetector(
+                  onPanUpdate: (details) {
+                    if (details.delta.dx > 0) {
+                      BlocProvider.of<VideoPlayerBloc>(context)
+                          .add(VideoPlayerPanned(true));
+                    } else {
+                      BlocProvider.of<VideoPlayerBloc>(context)
+                          .add(VideoPlayerPanned(false));
+                    }
+                  },
+                  child: Container(
+                      child: Stack(
+                    children: <Widget>[
+                      Container(),
+                      Center(
+                        child: GestureDetector(
+                            onTap: () {
+                              BlocProvider.of<VideoPlayerBloc>(context)
+                                  .add(VideoPlayerControlsToggled());
+                            },
+                            child: VideoPlayer(state.controller)),
+                      ),
+                      Container(),
+                      if (customSkinRenderer != null) ...{
+                        // customSkinRenderer(state)
+                      } else ...{
+                        YoutubeSkin(flutterVideoPlayerController, state)
+                      }
+                    ],
+                  )),
+                );
+              } else if (state is VideoPlayerFailure) {
+                return Container(
+                  color: Colors.black,
+                  child: IconButton(
+                    icon: Icon(Icons.warning, color: Colors.white, size: 40),
+                    onPressed: () {},
+                  ),
+                );
+              }
+            } else {
+              return Container(
+                decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    image: placeholderImage != null
+                        ? DecorationImage(
+                            image: NetworkImage(placeholderImage),
+                            fit: BoxFit.cover)
+                        : null),
+                child: InkWell(
+                  onTap: () {
+                    BlocProvider.of<VideoPlayerBloc>(context)
+                        .add(VideoPlayerToggled());
+                  },
+                  child: Image.asset(
+                    'assets/images/play_with_baground.png',
+                    height: 35,
+                    width: 35,
+                  ),
+                ),
+              );
+            }
+          });
+    } else {
+      return CircularProgressIndicator();
+    }
+  }
+
+  double _calculateAspectRatio(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+
+    return width > height ? width / height : height / width;
   }
 }

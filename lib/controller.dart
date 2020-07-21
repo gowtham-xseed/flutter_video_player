@@ -3,14 +3,13 @@ import 'package:flutter_video_player/bloc/video_player_bloc.dart';
 
 class FlutterVideoPlayerController {
   final StreamController<VideoPlayerSuccess> videoPlayerStream =
-      StreamController<VideoPlayerSuccess>();
+      StreamController<VideoPlayerSuccess>.broadcast();
   VideoPlayerBloc videoPlayerBloc;
 
   bool isInitialized = false;
 
-  void initialize(
-      VideoPlayerSuccess _videoPlayerState, VideoPlayerBloc _videoPlayerBloc) {
-    this.videoPlayerStream.add(_videoPlayerState);
+  void initialize(VideoPlayerBloc _videoPlayerBloc) {
+    // this.videoPlayerStream.add(_videoPlayerState);
     this.videoPlayerBloc = _videoPlayerBloc;
     this.isInitialized = true;
   }
