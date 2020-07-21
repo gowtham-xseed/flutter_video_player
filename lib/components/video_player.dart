@@ -11,18 +11,24 @@ typedef CustomSkinRenderer = Widget Function(
 
 class FlutterVideoPlayer extends StatelessWidget {
   FlutterVideoPlayer(this.videoPlayerController,
-      {this.placeholderImage, this.customSkinRenderer});
+      {this.placeholderImage,
+      this.customSkinRenderer,
+      this.playOnlyInFullScreen});
   final VideoPlayerController videoPlayerController;
   final String placeholderImage;
   final CustomSkinRenderer customSkinRenderer;
+  final bool playOnlyInFullScreen;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => VideoPlayerBloc(controller: videoPlayerController),
+        create: (context) => VideoPlayerBloc(
+            videoPlayerController: videoPlayerController,
+            playOnlyInFullScreen: playOnlyInFullScreen || false),
         child: FlutterVideoPlayerLayout(
-            placeholderImage: placeholderImage,
-            customSkinRenderer: customSkinRenderer));
+          placeholderImage: placeholderImage,
+          customSkinRenderer: customSkinRenderer,
+        ));
   }
 }
 
@@ -49,7 +55,13 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
 
   BlocConsumer _buildPlayerWithControls() {
     return BlocConsumer<VideoPlayerBloc, VideoPlayerState>(
-        listener: (BuildContext context, VideoPlayerState state) {
+        listenWhen: (previous, current) {
+      print('Listen Triggered ' +
+          previous.hashCode.toString() +
+          ' -> ' +
+          current.hashCode.toString());
+      return previous.hashCode.toString() != current.hashCode.toString();
+    }, listener: (BuildContext context, VideoPlayerState state) {
       flutterVideoPlayerController.updateVideoPlayerStream(state);
 
       if (state is VideoPlayerSuccess && state.isFullScreenChanged == true) {
@@ -57,7 +69,7 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
           _pushFullScreenWidget(
               context, BlocProvider.of<VideoPlayerBloc>(context));
         } else {
-          _popFullScreenWidget(context);
+          // _popFullScreenWidget(context);
         }
       }
     }, builder: (context, state) {
@@ -184,7 +196,10 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
               body: Container(
                 alignment: Alignment.center,
                 color: Colors.black,
-                child: FlutterVideoPlayerLayout(),
+                child: FlutterVideoPlayerLayout(
+                  placeholderImage: placeholderImage,
+                  customSkinRenderer: customSkinRenderer,
+                ),
               ),
             ));
       },

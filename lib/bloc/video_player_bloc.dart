@@ -4,22 +4,23 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:video_player/video_player.dart';
-import '../controller.dart';
 
 part 'video_player_event.dart';
 part 'video_player_state.dart';
 
 class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
-  VideoPlayerBloc({@required VideoPlayerController controller})
-      : assert(controller != null),
-        videoPlayerController = controller {
+  VideoPlayerBloc(
+      {@required this.videoPlayerController, this.playOnlyInFullScreen})
+      : assert(videoPlayerController != null) {
     if (!videoPlayerController.value.initialized) {
       videoPlayerController.initialize();
     }
-    videoPlayerController.addListener(controllerCallBackListener);
+    // videoPlayerController.addListener(controllerCallBackListener);
   }
+
   Timer _timer;
   final VideoPlayerController videoPlayerController;
+  final bool playOnlyInFullScreen;
 
   void initialControlsTimer() {
     Timer(const Duration(seconds: 3), () {
@@ -63,25 +64,29 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
 
   Stream<VideoPlayerState> _mapVideoPlayerToggledToState(
       VideoPlayerEvent event) async* {
+    bool _isFullScreenChanged = playOnlyInFullScreen;
+
     if (state is VideoPlayerSuccess) {
-      if (videoPlayerController.value.isPlaying) {
+      bool isPlaying = videoPlayerController.value.isPlaying;
+      if (isPlaying) {
         videoPlayerController.pause();
       } else {
         videoPlayerController.play();
       }
+
       final currentState = (state as VideoPlayerSuccess);
       yield VideoPlayerSuccess(
           videoPlayerController,
           videoPlayerController.value,
-          currentState.isFullScreen,
+          playOnlyInFullScreen ? !isPlaying : currentState.isFullScreen,
           currentState.showControls,
-          isFullScreenChanged: false);
+          isFullScreenChanged: _isFullScreenChanged);
     } else if (state is VideoPlayerInitial) {
       initialControlsTimer();
       videoPlayerController.play();
-      yield VideoPlayerSuccess(
-          videoPlayerController, videoPlayerController.value, false, true,
-          isFullScreenChanged: false);
+      yield VideoPlayerSuccess(videoPlayerController,
+          videoPlayerController.value, _isFullScreenChanged, true,
+          isFullScreenChanged: _isFullScreenChanged);
     }
   }
 
