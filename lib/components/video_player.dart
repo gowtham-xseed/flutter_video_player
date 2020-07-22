@@ -103,7 +103,7 @@ class FlutterVideoPlayer extends StatelessWidget {
           value: videoPlayerBloc,
           child: WillPopScope(
             onWillPop: () {
-              flutterVideoPlayerController.toggle();
+              flutterVideoPlayerController.playPauseToggle();
             },
             child: Scaffold(
               resizeToAvoidBottomPadding: false,
@@ -224,7 +224,7 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
       child: Center(
         child: InkWell(
           onTap: () {
-            flutterVideoPlayerController.toggle();
+            flutterVideoPlayerController.playPauseToggle();
           },
           child: Image.asset(
             'assets/images/play_with_baground.png',

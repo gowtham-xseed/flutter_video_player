@@ -47,7 +47,7 @@ class YoutubeSkin extends StatelessWidget {
                     color: iconColor,
                   ),
                   onPressed: () {
-                    flutterVideoPlayerController.toggle();
+                    flutterVideoPlayerController.playPauseToggle();
                   },
                 ),
                 Spacer(),

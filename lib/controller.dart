@@ -26,7 +26,7 @@ class FlutterVideoPlayerController {
     videoPlayerBloc.add(VideoPlayerSeeked(value));
   }
 
-  void toggle() {
+  void playPauseToggle() {
     videoPlayerBloc.add(VideoPlayerToggled());
   }
 

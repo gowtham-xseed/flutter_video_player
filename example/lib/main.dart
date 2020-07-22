@@ -32,7 +32,7 @@ class _VideoAppState extends State<VideoApp> {
       ),
       child: InkWell(
         onTap: () {
-          flutterVideoPlayerController.toggle();
+          flutterVideoPlayerController.togplayPauseTogglegle();
         },
         child: Image.asset(
           'assets/images/play_with_baground.png',
@@ -42,7 +42,7 @@ class _VideoAppState extends State<VideoApp> {
     );
   }
 
-  Widget customSkinRenderer(flutterVideoPlayerController, state) {
+  Widget customSkinRenderer(flutterVideoPlayerController, state, titile) {
     if (state is VideoPlayerSuccess) {
       if (!state.isFullScreen) {
         return initialWidget(flutterVideoPlayerController);
@@ -65,7 +65,7 @@ class _VideoAppState extends State<VideoApp> {
                           child:
                               Image.asset('assets/images/back.png', height: 16),
                           onTap: () {
-                            flutterVideoPlayerController.toggle();
+                            flutterVideoPlayerController.playPauseToggle();
                           },
                         ),
                         SizedBox(
@@ -103,7 +103,7 @@ class _VideoAppState extends State<VideoApp> {
                           height: 30,
                         ),
                         onTap: () {
-                          flutterVideoPlayerController.toggle();
+                          flutterVideoPlayerController.playPauseToggle();
                         },
                       ),
                       SizedBox(
@@ -182,9 +182,11 @@ class _VideoAppState extends State<VideoApp> {
       home: SafeArea(
         child: Scaffold(
           body: Center(
-            child: FlutterVideoPlayer(_controller,
-                customSkinRenderer: customSkinRenderer,
-                playOnlyInFullScreen: true),
+            child: FlutterVideoPlayer(
+              _controller,
+              customSkinRenderer: customSkinRenderer,
+              playOnlyInFullScreen: true,
+            ),
           ),
         ),
       ),
