@@ -50,7 +50,7 @@ flutter:
   assets:
     - assets/images/play.png
     - assets/images/pause.png
-    - assets/images/play_with_baground.png
+    - assets/images/play_with_background.png
     - assets/images/back.png
     - assets/images/fast_forward.png
     - assets/images/fast_rewind.png

@@ -227,7 +227,7 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
             flutterVideoPlayerController.playPauseToggle();
           },
           child: Image.asset(
-            'assets/images/play_with_baground.png',
+            'assets/images/play_with_background.png',
             height: 55,
           ),
         ),

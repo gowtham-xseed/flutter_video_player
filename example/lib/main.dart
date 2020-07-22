@@ -35,7 +35,7 @@ class _VideoAppState extends State<VideoApp> {
           flutterVideoPlayerController.togplayPauseTogglegle();
         },
         child: Image.asset(
-          'assets/images/play_with_baground.png',
+          'assets/images/play_with_background.png',
           height: 35,
         ),
       ),
