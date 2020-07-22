@@ -27,8 +27,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your package, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/images/play_with_background.png
   #   - images/a_dot_ham.jpeg
   #
   # For details regarding assets in packages, see
