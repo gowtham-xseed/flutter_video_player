@@ -8,7 +8,7 @@ import 'package:video_player/video_player.dart';
 
 typedef CustomSkinRenderer = Widget Function(
     FlutterVideoPlayerController flutterVideoPlayerController,
-    VideoPlayerSuccess state);
+    VideoPlayerState state);
 
 class FlutterVideoPlayer extends StatelessWidget {
   FlutterVideoPlayer(this.videoPlayerController,
@@ -151,7 +151,8 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
           stream: flutterVideoPlayerController.videoPlayerStream.stream,
           builder: (context, streamData) {
             if (streamData != null && streamData.data != null) {
-              VideoPlayerSuccess state = streamData.data;
+              VideoPlayerState state = streamData.data;
+
               if (state is VideoPlayerSuccess) {
                 return GestureDetector(
                   onPanUpdate: (details) {
@@ -187,36 +188,38 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
                 );
               } else if (state is VideoPlayerFailure) {
                 return Container(
-                  color: Colors.black,
+                  color: Colors.black.withOpacity(0.5),
                   child: IconButton(
                     icon: Icon(Icons.warning, color: Colors.white, size: 40),
                     onPressed: () {},
                   ),
                 );
-              }
-            } else {
-              return Container(
-                decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
-                    image: placeholderImage != null
-                        ? DecorationImage(
-                            image: NetworkImage(placeholderImage),
-                            fit: BoxFit.cover)
-                        : null),
-                child: InkWell(
-                  onTap: () {
-                    BlocProvider.of<VideoPlayerBloc>(context)
-                        .add(VideoPlayerToggled());
-                  },
-                  child: SizedBox(
-                    height: 35,
-                    child: Image.asset(
-                      'assets/images/play_with_baground.png',
+              } else {
+                return Container(
+                  decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.5),
+                      image: placeholderImage != null
+                          ? DecorationImage(
+                              image: NetworkImage(placeholderImage),
+                              fit: BoxFit.cover)
+                          : null),
+                  child: InkWell(
+                    onTap: () {
+                      BlocProvider.of<VideoPlayerBloc>(context)
+                          .add(VideoPlayerToggled());
+                    },
+                    child: SizedBox(
                       height: 35,
+                      child: Image.asset(
+                        'assets/images/play_with_baground.png',
+                        height: 35,
+                      ),
                     ),
                   ),
-                ),
-              );
+                );
+              }
+            } else {
+              return SizedBox();
             }
           });
     } else {

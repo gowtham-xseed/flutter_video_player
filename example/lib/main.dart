@@ -184,8 +184,6 @@ class _VideoAppState extends State<VideoApp> {
           body: Center(
             child: FlutterVideoPlayer(_controller,
                 customSkinRenderer: customSkinRenderer,
-                placeholderImage:
-                    'https://d1csarkz8obe9u.cloudfront.net/posterpreviews/summer-beach-zoom-virtual-background-video-design-template-c95b9c7d4c37ed391e8cbc1aeb7f1127.jpg?ts=1589072498',
                 playOnlyInFullScreen: true),
           ),
         ),

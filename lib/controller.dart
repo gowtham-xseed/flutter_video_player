@@ -35,22 +35,21 @@ class FlutterVideoPlayerController {
   }
 
   void fastForward() async {
-    VideoPlayerSuccess lastStreamData =
-        await this.videoPlayerStream.stream.last;
+    VideoPlayerState lastStreamData = await this.videoPlayerStream.stream.last;
 
-    double newPosition =
-        lastStreamData.controllerValue.position.inSeconds.toDouble() + 10;
-    videoPlayerBloc.add(VideoPlayerSeeked(newPosition));
+    if (lastStreamData is VideoPlayerSuccess) {
+      double newPosition =
+          lastStreamData.controllerValue.position.inSeconds.toDouble() + 10;
+      videoPlayerBloc.add(VideoPlayerSeeked(newPosition));
+    }
   }
 
   void fastRewind() async {
-    print('fastRewind');
-    VideoPlayerSuccess lastStreamData =
-        await this.videoPlayerStream.stream.last;
-    print('fastRewind 1');
-    double newPosition =
-        lastStreamData.controllerValue.position.inSeconds.toDouble() - 10;
-    videoPlayerBloc.add(VideoPlayerSeeked(newPosition));
-    print('fastRewind 2');
+    VideoPlayerState lastStreamData = await this.videoPlayerStream.stream.last;
+    if (lastStreamData is VideoPlayerSuccess) {
+      double newPosition =
+          lastStreamData.controllerValue.position.inSeconds.toDouble() - 10;
+      videoPlayerBloc.add(VideoPlayerSeeked(newPosition));
+    }
   }
 }
