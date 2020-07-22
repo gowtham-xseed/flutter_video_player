@@ -15,7 +15,8 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
     if (!videoPlayerController.value.initialized) {
       videoPlayerController.initialize();
     }
-    // videoPlayerController.addListener(controllerCallBackListener);
+
+    videoPlayerController.addListener(controllerCallBackListener);
   }
 
   Timer _timer;

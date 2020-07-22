@@ -51,7 +51,10 @@ flutter:
     - assets/images/play.png
     - assets/images/pause.png
     - assets/images/play_with_baground.png
-
+    - assets/images/back.png
+    - assets/images/fast_forward.png
+    - assets/images/fast_rewind.png
+    
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

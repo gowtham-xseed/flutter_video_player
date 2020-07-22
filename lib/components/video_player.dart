@@ -7,7 +7,8 @@ import 'package:flutter_video_player/flutter_video_player.dart';
 import 'package:video_player/video_player.dart';
 
 typedef CustomSkinRenderer = Widget Function(
-    FlutterVideoPlayerController flutterVideoPlayerController);
+    FlutterVideoPlayerController flutterVideoPlayerController,
+    VideoPlayerSuccess state);
 
 class FlutterVideoPlayer extends StatelessWidget {
   FlutterVideoPlayer(this.videoPlayerController,
@@ -30,24 +31,12 @@ class FlutterVideoPlayer extends StatelessWidget {
         child: Column(
           children: <Widget>[
             BlocConsumer<VideoPlayerBloc, VideoPlayerState>(
-                listenWhen: (previous, current) {
-              print('Listen Triggered ' +
-                  previous.hashCode.toString() +
-                  ' -> ' +
-                  current.hashCode.toString());
-              return previous.hashCode.toString() !=
-                  current.hashCode.toString();
-            }, listener: (BuildContext context, VideoPlayerState state) {
+                listener: (BuildContext context, VideoPlayerState state) {
               flutterVideoPlayerController.updateVideoPlayerStream(state);
 
               if (state is VideoPlayerSuccess &&
                   state.isFullScreenChanged == true) {
-                if (state.isFullScreen) {
-                  _pushFullScreenWidget(
-                      context, BlocProvider.of<VideoPlayerBloc>(context));
-                } else {
-                  _popFullScreenWidget(context);
-                }
+                handleFullScreenChanged(context, state.isFullScreen);
               }
             }, builder: (context, state) {
               return SizedBox();
@@ -58,6 +47,14 @@ class FlutterVideoPlayer extends StatelessWidget {
                 flutterVideoPlayerController: flutterVideoPlayerController)
           ],
         ));
+  }
+
+  void handleFullScreenChanged(BuildContext context, bool isFullScreenEnabled) {
+    if (isFullScreenEnabled) {
+      _pushFullScreenWidget(context, BlocProvider.of<VideoPlayerBloc>(context));
+    } else {
+      _popFullScreenWidget(context);
+    }
   }
 
   _popFullScreenWidget(BuildContext context) {
@@ -163,7 +160,6 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
                   child: Container(
                       child: Stack(
                     children: <Widget>[
-                      Container(),
                       Center(
                         child: GestureDetector(
                             onTap: () {
@@ -172,12 +168,14 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
                             },
                             child: VideoPlayer(state.controller)),
                       ),
-                      Container(),
-                      if (customSkinRenderer != null) ...{
-                        // customSkinRenderer(state)
-                      } else ...{
-                        YoutubeSkin(flutterVideoPlayerController, state)
-                      }
+                      Container(
+                        height: double.maxFinite,
+                        width: double.maxFinite,
+                        child: customSkinRenderer != null
+                            ? customSkinRenderer(
+                                flutterVideoPlayerController, state)
+                            : YoutubeSkin(flutterVideoPlayerController, state),
+                      )
                     ],
                   )),
                 );
