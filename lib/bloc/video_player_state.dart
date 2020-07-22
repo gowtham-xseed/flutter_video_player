@@ -29,9 +29,6 @@ class VideoPlayerSuccess extends VideoPlayerState {
         isFullScreenChanged,
         showControls
       ];
-
-  String toString() =>
-      'isFullScreen $isFullScreen isFullScreenChanged $isFullScreenChanged';
 }
 
 class VideoPlayerFailure extends VideoPlayerState {
