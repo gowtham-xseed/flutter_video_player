@@ -8,7 +8,8 @@ import 'package:video_player/video_player.dart';
 
 typedef CustomSkinRenderer = Widget Function(
     FlutterVideoPlayerController flutterVideoPlayerController,
-    VideoPlayerState state, String title);
+    VideoPlayerState state,
+    String title);
 
 class FlutterVideoPlayer extends StatelessWidget {
   FlutterVideoPlayer(this.videoPlayerController,
@@ -112,7 +113,8 @@ class FlutterVideoPlayer extends StatelessWidget {
                 child: FlutterVideoPlayerLayout(
                     placeholderImage: placeholderImage,
                     customSkinRenderer: customSkinRenderer,
-                    flutterVideoPlayerController: flutterVideoPlayerController),
+                    flutterVideoPlayerController: flutterVideoPlayerController,
+                    title: title),
               ),
             ),
           ),
@@ -219,17 +221,17 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
               ? DecorationImage(
                   image: NetworkImage(placeholderImage), fit: BoxFit.cover)
               : null),
-      child: SizedBox(
-          height: 35,
-          child: InkWell(
-            onTap: () {
-              flutterVideoPlayerController.toggle();
-            },
-            child: Image.asset(
-              'assets/images/play_with_baground.png',
-              height: 35,
-            ),
-          )),
+      child: Center(
+        child: InkWell(
+          onTap: () {
+            flutterVideoPlayerController.toggle();
+          },
+          child: Image.asset(
+            'assets/images/play_with_baground.png',
+            height: 55,
+          ),
+        ),
+      ),
     );
   }
 
