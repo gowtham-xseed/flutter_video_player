@@ -25,102 +25,167 @@ class _VideoAppState extends State<VideoApp> {
       });
   }
 
-  Widget customSkinRenderer(flutterVideoPlayerController) {
-    return StreamBuilder(
-        stream: flutterVideoPlayerController.videoPlayerStream.stream,
-        builder: (context, streamData) {
-          if (streamData != null && streamData.data != null) {
-            VideoPlayerSuccess state = streamData.data;
+  Widget initialWidget(flutterVideoPlayerController) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.5),
+      ),
+      child: InkWell(
+        onTap: () {
+          flutterVideoPlayerController.toggle();
+        },
+        child: Image.asset(
+          'assets/images/play_with_baground.png',
+          height: 35,
+        ),
+      ),
+    );
+  }
 
-            if (true || state.showControls) {
-              return InkWell(
-                onTap: () {
-                  flutterVideoPlayerController.toggleControlsVisibily();
-                },
-                child: Container(
-                    child: Column(
-                  children: <Widget>[
-                    Spacer(),
-                    Row(
+  Widget customSkinRenderer(flutterVideoPlayerController, state) {
+    if (state is VideoPlayerSuccess) {
+      if (!state.isFullScreen) {
+        return initialWidget(flutterVideoPlayerController);
+      } else if (state.showControls) {
+        return InkWell(
+          onTap: () {
+            flutterVideoPlayerController.toggleControlsVisibily();
+          },
+          child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+              ),
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 18, left: 18),
+                    child: Row(
                       children: <Widget>[
-                        Expanded(
-                          child: Container(
-                            height: 20,
-                            child: Slider(
-                              activeColor: Color(0xFF515151),
-                              inactiveColor: Colors.white.withOpacity(0.5),
-                              min: 0.0,
-                              max: state.controllerValue.duration.inSeconds
-                                  .toDouble(),
-                              value: state.controllerValue.position.inSeconds
-                                  .toDouble(),
-                              onChanged: (double value) {
-                                flutterVideoPlayerController.seekTo(value);
-                              },
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Row(
-                      children: <Widget>[
-                        SizedBox(
-                          width: 30,
-                        ),
                         InkWell(
+                          child:
+                              Image.asset('assets/images/back.png', height: 16),
                           onTap: () {
                             flutterVideoPlayerController.toggle();
                           },
-                          child: Image.asset(
-                            state.controllerValue.isPlaying
-                                ? 'assets/images/pause.png'
-                                : 'assets/images/play.png',
-                            height: 15,
-                            width: 15,
-                          ),
                         ),
                         SizedBox(
                           width: 15,
                         ),
-                        Text(
-                            formatDuration(state.controllerValue.position) +
-                                ' / ' +
-                                formatDuration(state.controllerValue.duration),
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 12)),
-                        Spacer(),
+                        Text('Video Name',
+                            style: TextStyle(fontSize: 14, color: Colors.white))
                       ],
                     ),
-                    SizedBox(
-                      height: 10,
-                    )
-                  ],
-                )),
-              );
-            } else {
-              return SizedBox(height: 0, width: 0);
-            }
-          } else {
-            return SizedBox(
-                height: 50,
-                width: 50,
-                child: Center(child: CircularProgressIndicator()));
-          }
-        });
+                  ),
+                  Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      InkWell(
+                        child: Image.asset(
+                          'assets/images/fast_rewind.png',
+                          height: 30,
+                        ),
+                        onTap: () async {
+                          flutterVideoPlayerController.seekTo(state
+                                  .controllerValue.position.inSeconds
+                                  .toDouble() -
+                              10);
+                        },
+                      ),
+                      SizedBox(
+                        width: 40,
+                      ),
+                      InkWell(
+                        child: Image.asset(
+                          state.controllerValue.isPlaying
+                              ? 'assets/images/pause.png'
+                              : 'assets/images/play.png',
+                          height: 30,
+                        ),
+                        onTap: () {
+                          flutterVideoPlayerController.toggle();
+                        },
+                      ),
+                      SizedBox(
+                        width: 40,
+                      ),
+                      InkWell(
+                        child: Image.asset(
+                          'assets/images/fast_forward.png',
+                          height: 30,
+                        ),
+                        onTap: () async {
+                          flutterVideoPlayerController.seekTo(state
+                                  .controllerValue.position.inSeconds
+                                  .toDouble() +
+                              10);
+                        },
+                      ),
+                    ],
+                  ),
+                  Spacer(),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          height: 20,
+                          child: Slider(
+                            activeColor: Color(0xFF515151),
+                            inactiveColor: Color(0xFFDEDEDE),
+                            min: 0.0,
+                            max: state.controllerValue.duration.inSeconds
+                                .toDouble(),
+                            value: state.controllerValue.position.inSeconds
+                                .toDouble(),
+                            onChanged: (double value) {
+                              flutterVideoPlayerController.seekTo(value);
+                            },
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Row(
+                    children: <Widget>[
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Text(
+                          formatDuration(state.controllerValue.position) +
+                              ' / ' +
+                              formatDuration(state.controllerValue.duration),
+                          style: TextStyle(color: Colors.white, fontSize: 14)),
+                      Spacer(),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  )
+                ],
+              )),
+        );
+      } else {
+        return SizedBox(height: 0, width: 0);
+      }
+    } else {
+      return SizedBox(height: 0, width: 0);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Video Demo',
-      home: Scaffold(
-        body: Center(
-          child: FlutterVideoPlayer(_controller,
-              customSkinRenderer: customSkinRenderer,
-              playOnlyInFullScreen: true),
+      home: SafeArea(
+        child: Scaffold(
+          body: Center(
+            child: FlutterVideoPlayer(_controller,
+                customSkinRenderer: customSkinRenderer,
+                playOnlyInFullScreen: true),
+          ),
         ),
       ),
     );
