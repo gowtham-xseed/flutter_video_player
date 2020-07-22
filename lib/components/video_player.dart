@@ -8,16 +8,18 @@ import 'package:video_player/video_player.dart';
 
 typedef CustomSkinRenderer = Widget Function(
     FlutterVideoPlayerController flutterVideoPlayerController,
-    VideoPlayerState state);
+    VideoPlayerState state, String title);
 
 class FlutterVideoPlayer extends StatelessWidget {
   FlutterVideoPlayer(this.videoPlayerController,
       {this.placeholderImage,
       this.customSkinRenderer,
-      this.playOnlyInFullScreen});
+      this.playOnlyInFullScreen,
+      this.title});
   final VideoPlayerController videoPlayerController;
   final String placeholderImage;
   final CustomSkinRenderer customSkinRenderer;
+  final String title;
   final bool playOnlyInFullScreen;
   FlutterVideoPlayerController flutterVideoPlayerController =
       FlutterVideoPlayerController();
@@ -43,6 +45,7 @@ class FlutterVideoPlayer extends StatelessWidget {
             }),
             FlutterVideoPlayerLayout(
                 placeholderImage: placeholderImage,
+                title: title,
                 customSkinRenderer: customSkinRenderer,
                 flutterVideoPlayerController: flutterVideoPlayerController)
           ],
@@ -122,9 +125,11 @@ class FlutterVideoPlayer extends StatelessWidget {
 class FlutterVideoPlayerLayout extends StatelessWidget {
   FlutterVideoPlayerLayout(
       {this.placeholderImage,
+      this.title,
       this.customSkinRenderer,
       this.flutterVideoPlayerController});
   final String placeholderImage;
+  final String title;
   final CustomSkinRenderer customSkinRenderer;
   final FlutterVideoPlayerController flutterVideoPlayerController;
 
@@ -180,7 +185,7 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
                         width: double.maxFinite,
                         child: customSkinRenderer != null
                             ? customSkinRenderer(
-                                flutterVideoPlayerController, state)
+                                flutterVideoPlayerController, state, title)
                             : YoutubeSkin(flutterVideoPlayerController, state),
                       )
                     ],
@@ -195,36 +200,37 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
                   ),
                 );
               } else {
-                return Container(
-                  decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
-                      image: placeholderImage != null
-                          ? DecorationImage(
-                              image: NetworkImage(placeholderImage),
-                              fit: BoxFit.cover)
-                          : null),
-                  child: InkWell(
-                    onTap: () {
-                      BlocProvider.of<VideoPlayerBloc>(context)
-                          .add(VideoPlayerToggled());
-                    },
-                    child: SizedBox(
-                      height: 35,
-                      child: Image.asset(
-                        'assets/images/play_with_baground.png',
-                        height: 35,
-                      ),
-                    ),
-                  ),
-                );
+                return initialStateWidget();
               }
             } else {
-              return SizedBox();
+              return initialStateWidget();
             }
           });
     } else {
       return CircularProgressIndicator();
     }
+  }
+
+  Widget initialStateWidget() {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.5),
+          image: placeholderImage != null
+              ? DecorationImage(
+                  image: NetworkImage(placeholderImage), fit: BoxFit.cover)
+              : null),
+      child: SizedBox(
+          height: 35,
+          child: InkWell(
+            onTap: () {
+              flutterVideoPlayerController.toggle();
+            },
+            child: Image.asset(
+              'assets/images/play_with_baground.png',
+              height: 35,
+            ),
+          )),
+    );
   }
 
   double _calculateAspectRatio(BuildContext context) {
