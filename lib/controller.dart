@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter_video_player/bloc/video_player_bloc.dart';
 
 class FlutterVideoPlayerController {
-  final StreamController<VideoPlayerSuccess> videoPlayerStream =
-      StreamController<VideoPlayerSuccess>.broadcast();
+  final StreamController<VideoPlayerState> videoPlayerStream =
+      StreamController<VideoPlayerState>.broadcast();
   VideoPlayerBloc videoPlayerBloc;
 
   bool isInitialized = false;
@@ -14,7 +14,7 @@ class FlutterVideoPlayerController {
     this.isInitialized = true;
   }
 
-  void updateVideoPlayerStream(VideoPlayerSuccess _videoPlayerState) {
+  void updateVideoPlayerStream(VideoPlayerState _videoPlayerState) {
     this.videoPlayerStream.add(_videoPlayerState);
   }
 

@@ -96,7 +96,11 @@ class FlutterVideoPlayer extends StatelessWidget {
       animation: animation,
       builder: (BuildContext context, Widget child) {
         return BlocProvider.value(
-            value: videoPlayerBloc,
+          value: videoPlayerBloc,
+          child: WillPopScope(
+            onWillPop: () {
+              flutterVideoPlayerController.toggle();
+            },
             child: Scaffold(
               resizeToAvoidBottomPadding: false,
               body: Container(
@@ -107,7 +111,9 @@ class FlutterVideoPlayer extends StatelessWidget {
                     customSkinRenderer: customSkinRenderer,
                     flutterVideoPlayerController: flutterVideoPlayerController),
               ),
-            ));
+            ),
+          ),
+        );
       },
     );
   }
@@ -202,10 +208,12 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
                     BlocProvider.of<VideoPlayerBloc>(context)
                         .add(VideoPlayerToggled());
                   },
-                  child: Image.asset(
-                    'assets/images/play_with_baground.png',
+                  child: SizedBox(
                     height: 35,
-                    width: 35,
+                    child: Image.asset(
+                      'assets/images/play_with_baground.png',
+                      height: 35,
+                    ),
                   ),
                 ),
               );

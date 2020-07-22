@@ -1,3 +1,4 @@
+import 'package:flutter_video_player/bloc/video_player_bloc.dart';
 import 'package:flutter_video_player/flutter_video_player.dart';
 import 'package:flutter_video_player/utils/video_player.dart';
 import 'package:video_player/video_player.dart';
@@ -36,17 +37,16 @@ class _VideoAppState extends State<VideoApp> {
         child: Image.asset(
           'assets/images/play_with_baground.png',
           height: 35,
-          width: 35,
         ),
       ),
     );
   }
 
   Widget customSkinRenderer(flutterVideoPlayerController, state) {
-    if (!state.isFullScreen) {
-      return initialWidget(flutterVideoPlayerController);
-    } else {
-      if (state.showControls) {
+    if (state is VideoPlayerSuccess) {
+      if (!state.isFullScreen) {
+        return initialWidget(flutterVideoPlayerController);
+      } else if (state.showControls) {
         return InkWell(
           onTap: () {
             flutterVideoPlayerController.toggleControlsVisibily();
@@ -170,6 +170,8 @@ class _VideoAppState extends State<VideoApp> {
       } else {
         return SizedBox(height: 0, width: 0);
       }
+    } else {
+      return SizedBox(height: 0, width: 0);
     }
   }
 
