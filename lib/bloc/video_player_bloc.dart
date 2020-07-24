@@ -11,7 +11,7 @@ part 'video_player_state.dart';
 class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   VideoPlayerBloc(
       {@required this.videoPlayerController, this.playOnlyInFullScreen})
-      : assert(videoPlayerController != null) {
+      : assert(videoPlayerController != null), super(VideoPlayerInitial()) {
     if (!videoPlayerController.value.initialized) {
       videoPlayerController.initialize();
     }
@@ -36,9 +36,6 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
       add(ProgresUpdated(videoPlayerController.value));
     }
   }
-
-  @override
-  VideoPlayerState get initialState => VideoPlayerInitial();
 
   @override
   Stream<VideoPlayerState> mapEventToState(
