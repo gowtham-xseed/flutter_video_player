@@ -32,7 +32,7 @@ class _VideoAppState extends State<VideoApp> {
       ),
       child: InkWell(
         onTap: () {
-          flutterVideoPlayerController.togplayPauseTogglegle();
+          flutterVideoPlayerController.playPauseToggle();
         },
         child: Image.asset(
           'assets/images/play_with_background.png',

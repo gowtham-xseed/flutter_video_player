@@ -11,7 +11,8 @@ part 'video_player_state.dart';
 class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   VideoPlayerBloc(
       {@required this.videoPlayerController, this.playOnlyInFullScreen})
-      : assert(videoPlayerController != null), super(VideoPlayerInitial()) {
+      : assert(videoPlayerController != null),
+        super(VideoPlayerInitial()) {
     if (!videoPlayerController.value.initialized) {
       videoPlayerController.initialize();
     }
@@ -22,6 +23,7 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   Timer _timer;
   final VideoPlayerController videoPlayerController;
   final bool playOnlyInFullScreen;
+  bool previousPlayingState;
 
   void initialControlsTimer() {
     Timer(const Duration(seconds: 3), () {
@@ -30,11 +32,21 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   }
 
   void controllerCallBackListener() {
+    bool currentPlayingState = videoPlayerController.value.isPlaying;
+
     if (videoPlayerController.value.hasError) {
       add(VideoPlayerErrorOccured());
     } else {
       add(ProgresUpdated(videoPlayerController.value));
+
+      if (playOnlyInFullScreen && currentPlayingState != previousPlayingState) {
+        // Enable full screen if the player is playing
+        add(VideoPlayerFullScreenToggled(
+            enableFullScreen: currentPlayingState));
+      }
     }
+
+    previousPlayingState = currentPlayingState;
   }
 
   @override
@@ -62,11 +74,8 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
 
   Stream<VideoPlayerState> _mapVideoPlayerToggledToState(
       VideoPlayerEvent event) async* {
-    bool _isFullScreenChanged = playOnlyInFullScreen;
-
     if (state is VideoPlayerSuccess) {
-      bool isPlaying = videoPlayerController.value.isPlaying;
-      if (isPlaying) {
+      if (videoPlayerController.value.isPlaying) {
         videoPlayerController.pause();
       } else {
         videoPlayerController.play();
@@ -76,15 +85,15 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
       yield VideoPlayerSuccess(
           videoPlayerController,
           videoPlayerController.value,
-          playOnlyInFullScreen ? !isPlaying : currentState.isFullScreen,
+          currentState.isFullScreen,
           currentState.showControls,
-          isFullScreenChanged: _isFullScreenChanged);
+          isFullScreenChanged: false);
     } else if (state is VideoPlayerInitial) {
       initialControlsTimer();
       videoPlayerController.play();
-      yield VideoPlayerSuccess(videoPlayerController,
-          videoPlayerController.value, _isFullScreenChanged, true,
-          isFullScreenChanged: _isFullScreenChanged);
+      yield VideoPlayerSuccess(
+          videoPlayerController, videoPlayerController.value, true, true,
+          isFullScreenChanged: false);
     }
   }
 
@@ -120,11 +129,12 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
       VideoPlayerFullScreenToggled event) async* {
     if (state is VideoPlayerSuccess) {
       final currentState = (state as VideoPlayerSuccess);
-      yield VideoPlayerSuccess(
-          videoPlayerController,
-          videoPlayerController.value,
-          !currentState.isFullScreen,
-          currentState.showControls,
+      bool isFullScreen = event.enableFullScreen
+          ? event.enableFullScreen
+          : !currentState.isFullScreen;
+
+      yield VideoPlayerSuccess(videoPlayerController,
+          videoPlayerController.value, isFullScreen, currentState.showControls,
           isFullScreenChanged: true);
     }
   }

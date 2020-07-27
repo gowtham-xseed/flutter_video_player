@@ -30,9 +30,10 @@ class VideoPlayerSeeked extends VideoPlayerEvent {
 }
 
 class VideoPlayerFullScreenToggled extends VideoPlayerEvent {
-  VideoPlayerFullScreenToggled();
+  VideoPlayerFullScreenToggled({this.enableFullScreen});
+  final bool enableFullScreen;
 
-  List<Object> get props => [];
+  List<Object> get props => [enableFullScreen];
 }
 
 class VideoPlayerControlsToggled extends VideoPlayerEvent {
