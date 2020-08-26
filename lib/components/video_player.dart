@@ -12,16 +12,20 @@ typedef CustomSkinRenderer = Widget Function(
     String title);
 
 class FlutterVideoPlayer extends StatelessWidget {
-  FlutterVideoPlayer(this.videoPlayerController,
-      {this.placeholderImage,
-      this.customSkinRenderer,
-      this.playOnlyInFullScreen,
-      this.title});
+  FlutterVideoPlayer(
+    this.videoPlayerController, {
+    this.placeholderImage,
+    this.customSkinRenderer,
+    this.playOnlyInFullScreen,
+    this.title,
+    this.onPlayerStateChanged,
+  });
   final VideoPlayerController videoPlayerController;
   final String placeholderImage;
   final CustomSkinRenderer customSkinRenderer;
   final String title;
   final bool playOnlyInFullScreen;
+  final Function onPlayerStateChanged;
   FlutterVideoPlayerController flutterVideoPlayerController =
       FlutterVideoPlayerController();
 
@@ -29,8 +33,10 @@ class FlutterVideoPlayer extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (context) => VideoPlayerBloc(
-            videoPlayerController: videoPlayerController,
-            playOnlyInFullScreen: playOnlyInFullScreen || false),
+              videoPlayerController: videoPlayerController,
+              playOnlyInFullScreen: playOnlyInFullScreen || false,
+              onPlayerStateChanged: onPlayerStateChanged,
+            ),
         child: Column(
           children: <Widget>[
             BlocConsumer<VideoPlayerBloc, VideoPlayerState>(
