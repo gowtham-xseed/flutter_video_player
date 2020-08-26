@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_video_player/video_player_state.dart';
 import 'package:meta/meta.dart';
 import 'package:video_player/video_player.dart';
 
@@ -9,9 +10,11 @@ part 'video_player_event.dart';
 part 'video_player_state.dart';
 
 class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
-  VideoPlayerBloc(
-      {@required this.videoPlayerController, this.playOnlyInFullScreen})
-      : assert(videoPlayerController != null),
+  VideoPlayerBloc({
+    @required this.videoPlayerController,
+    this.playOnlyInFullScreen,
+    this.onPlayerStateChanged,
+  })  : assert(videoPlayerController != null),
         super(VideoPlayerInitial()) {
     if (!videoPlayerController.value.initialized) {
       videoPlayerController.initialize();
@@ -23,6 +26,7 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   Timer _timer;
   final VideoPlayerController videoPlayerController;
   final bool playOnlyInFullScreen;
+  final Function onPlayerStateChanged;
   bool previousPlayingState;
 
   void initialControlsTimer() {
@@ -36,14 +40,21 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
 
     if (videoPlayerController.value.hasError) {
       add(VideoPlayerErrorOccured());
+      onPlayerStateChanged(VideoPlayerStates.error);
     } else {
       add(ProgresUpdated(videoPlayerController.value));
 
       if (playOnlyInFullScreen && currentPlayingState != previousPlayingState) {
         // Enable full screen if the player is playing
-        add(VideoPlayerFullScreenToggled(
-            enableFullScreen: currentPlayingState));
+        add(
+          VideoPlayerFullScreenToggled(enableFullScreen: currentPlayingState),
+        );
       }
+    }
+
+    if (videoPlayerController.value.duration ==
+        videoPlayerController.value.position) {
+      onPlayerStateChanged(VideoPlayerStates.completed);
     }
 
     previousPlayingState = currentPlayingState;
@@ -77,8 +88,10 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
     if (state is VideoPlayerSuccess) {
       if (videoPlayerController.value.isPlaying) {
         videoPlayerController.pause();
+        onPlayerStateChanged(VideoPlayerStates.paused);
       } else {
         videoPlayerController.play();
+        onPlayerStateChanged(VideoPlayerStates.resumed);
       }
 
       final currentState = (state as VideoPlayerSuccess);
@@ -91,6 +104,7 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
     } else if (state is VideoPlayerInitial) {
       initialControlsTimer();
       videoPlayerController.play();
+      onPlayerStateChanged(VideoPlayerStates.started);
       yield VideoPlayerSuccess(
           videoPlayerController, videoPlayerController.value, true, true,
           isFullScreenChanged: false);
