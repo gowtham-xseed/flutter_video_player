@@ -4,12 +4,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_video_player/bloc/video_player_bloc.dart';
 import 'package:flutter_video_player/components/youtube_skin.dart';
 import 'package:flutter_video_player/flutter_video_player.dart';
+import 'package:flutter_video_player/video_player_state.dart';
 import 'package:video_player/video_player.dart';
 
 typedef CustomSkinRenderer = Widget Function(
-    FlutterVideoPlayerController flutterVideoPlayerController,
-    VideoPlayerState state,
-    String title);
+  FlutterVideoPlayerController flutterVideoPlayerController,
+  VideoPlayerState state,
+  String title,
+);
+
+typedef OnPlayerStateChanged = void Function(
+  VideoPlayerStates event,
+);
 
 class FlutterVideoPlayer extends StatelessWidget {
   FlutterVideoPlayer(
@@ -25,7 +31,7 @@ class FlutterVideoPlayer extends StatelessWidget {
   final CustomSkinRenderer customSkinRenderer;
   final String title;
   final bool playOnlyInFullScreen;
-  final Function onPlayerStateChanged;
+  final OnPlayerStateChanged onPlayerStateChanged;
   FlutterVideoPlayerController flutterVideoPlayerController =
       FlutterVideoPlayerController();
 

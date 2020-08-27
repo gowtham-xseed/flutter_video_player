@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_video_player/components/video_player.dart';
 import 'package:flutter_video_player/video_player_state.dart';
 import 'package:meta/meta.dart';
 import 'package:video_player/video_player.dart';
@@ -26,7 +27,7 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   Timer _timer;
   final VideoPlayerController videoPlayerController;
   final bool playOnlyInFullScreen;
-  final Function onPlayerStateChanged;
+  final OnPlayerStateChanged onPlayerStateChanged;
   bool previousPlayingState;
 
   void initialControlsTimer() {
@@ -90,6 +91,11 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
         videoPlayerController.pause();
         onPlayerStateChanged(VideoPlayerStates.paused);
       } else {
+        if (videoPlayerController.value.duration ==
+            videoPlayerController.value.position) {
+          videoPlayerController.seekTo(Duration(seconds: 0));
+        }
+
         videoPlayerController.play();
         onPlayerStateChanged(VideoPlayerStates.resumed);
       }
