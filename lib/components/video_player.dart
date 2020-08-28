@@ -89,6 +89,7 @@ class FlutterVideoPlayer extends StatelessWidget {
       DeviceOrientation.portraitDown,
       DeviceOrientation.portraitUp,
     ]);
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
 
     Navigator.of(context, rootNavigator: true).pop();
   }
