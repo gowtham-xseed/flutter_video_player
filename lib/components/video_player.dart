@@ -46,7 +46,18 @@ class FlutterVideoPlayer extends StatelessWidget {
         child: Column(
           children: <Widget>[
             BlocConsumer<VideoPlayerBloc, VideoPlayerState>(
-                listener: (BuildContext context, VideoPlayerState state) {
+                listenWhen: (previous, current) {
+              if (playOnlyInFullScreen &&
+                  previous is VideoPlayerSuccess &&
+                  current is VideoPlayerFailure) {
+                var isFullScreen =
+                    (previous as VideoPlayerSuccess).isFullScreen;
+                if (isFullScreen) {
+                  _popFullScreenWidget(context);
+                }
+              }
+              return true;
+            }, listener: (BuildContext context, VideoPlayerState state) {
               flutterVideoPlayerController.updateVideoPlayerStream(state);
 
               if (state is VideoPlayerSuccess &&
