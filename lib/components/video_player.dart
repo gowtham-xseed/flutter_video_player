@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -85,10 +87,8 @@ class FlutterVideoPlayer extends StatelessWidget {
   }
 
   _popFullScreenWidget(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.portraitUp,
-    ]);
+    SystemChrome.setPreferredOrientations(
+        <DeviceOrientation>[DeviceOrientation.portraitUp]);
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
 
     Navigator.of(context, rootNavigator: true).pop();
@@ -104,13 +104,14 @@ class FlutterVideoPlayer extends StatelessWidget {
           builderContext, animation, secondaryAnimation, videoPlayerBloc);
     });
 
-    SystemChrome.setEnabledSystemUIOverlays([]);
-    if (isAndroid) {
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ]);
+    if (Platform.isAndroid) {
+      SystemChrome.setPreferredOrientations(
+          <DeviceOrientation>[DeviceOrientation.landscapeLeft]);
+    } else {
+      SystemChrome.setPreferredOrientations(
+          <DeviceOrientation>[DeviceOrientation.landscapeRight]);
     }
+    SystemChrome.setEnabledSystemUIOverlays([]);
 
     await Navigator.of(context, rootNavigator: true).push(route);
   }
