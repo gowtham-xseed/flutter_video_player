@@ -220,9 +220,24 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
               } else if (state is VideoPlayerFailure) {
                 return Container(
                   color: Colors.black.withOpacity(0.5),
-                  child: IconButton(
-                    icon: Icon(Icons.warning, color: Colors.white, size: 40),
-                    onPressed: () {},
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: null,
+                        icon:
+                            Icon(Icons.warning, color: Colors.white, size: 40),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          flutterVideoPlayerController.playPauseToggle();
+                        },
+                        child: Text(
+                          'Retry',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               } else {

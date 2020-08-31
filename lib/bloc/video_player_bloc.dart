@@ -40,8 +40,14 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
     bool currentPlayingState = videoPlayerController.value.isPlaying;
 
     if (videoPlayerController.value.hasError) {
+      // if (videoPlayerController.value.isPlaying) {
+      //   videoPlayerController.pause();
+      // }
+
       add(VideoPlayerErrorOccured());
       onPlayerStateChanged(VideoPlayerStates.error);
+      print('VIDEO PLAYER ERROR => ' +
+          videoPlayerController.value.errorDescription);
     } else {
       add(ProgresUpdated(videoPlayerController.value));
 
@@ -114,6 +120,9 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
       yield VideoPlayerSuccess(
           videoPlayerController, videoPlayerController.value, true, true,
           isFullScreenChanged: false);
+    } else if (state is VideoPlayerFailure) {
+      videoPlayerController.play();
+      print('Video player Fail - retry');
     }
   }
 
