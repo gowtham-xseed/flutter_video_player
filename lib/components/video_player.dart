@@ -194,11 +194,11 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
                 return GestureDetector(
                   onPanUpdate: (details) {
                     if (details.delta.dx > 0) {
-                      BlocProvider.of<VideoPlayerBloc>(context)
-                          .add(VideoPlayerPanned(true));
+                      // BlocProvider.of<VideoPlayerBloc>(context)
+                      //     .add(VideoPlayerPanned(true));
                     } else {
-                      BlocProvider.of<VideoPlayerBloc>(context)
-                          .add(VideoPlayerPanned(false));
+                      // BlocProvider.of<VideoPlayerBloc>(context)
+                      //     .add(VideoPlayerPanned(false));
                     }
                   },
                   child: Container(
