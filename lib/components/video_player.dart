@@ -21,19 +21,23 @@ typedef OnPlayerStateChanged = void Function(
 
 class FlutterVideoPlayer extends StatelessWidget {
   FlutterVideoPlayer(
+    Key key,
     this.videoPlayerController, {
     this.placeholderImage,
     this.customSkinRenderer,
     this.playOnlyInFullScreen,
     this.title,
     this.onPlayerStateChanged,
-  });
+    this.onRetry,
+  }) : super(key: key);
   final VideoPlayerController videoPlayerController;
   final String placeholderImage;
   final CustomSkinRenderer customSkinRenderer;
   final String title;
   final bool playOnlyInFullScreen;
   final OnPlayerStateChanged onPlayerStateChanged;
+  final Function onRetry;
+
   FlutterVideoPlayerController flutterVideoPlayerController =
       FlutterVideoPlayerController();
 
@@ -44,6 +48,7 @@ class FlutterVideoPlayer extends StatelessWidget {
               videoPlayerController: videoPlayerController,
               playOnlyInFullScreen: playOnlyInFullScreen || false,
               onPlayerStateChanged: onPlayerStateChanged,
+              onRetry: onRetry,
             ),
         child: Column(
           children: <Widget>[
