@@ -17,7 +17,13 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
     this.onPlayerStateChanged,
     this.onRetry,
   })  : assert(videoPlayerController != null),
-        super(VideoPlayerInitial()) {
+        super(VideoPlayerSuccess(
+          videoPlayerController,
+          videoPlayerController.value,
+          false,
+          false,
+          isFullScreenChanged: false,
+        )) {
     if (!videoPlayerController.value.initialized) {
       videoPlayerController.initialize();
     }
@@ -30,7 +36,7 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   final bool playOnlyInFullScreen;
   final OnPlayerStateChanged onPlayerStateChanged;
   final Function onRetry;
-  bool previousPlayingState;
+  bool previousPlayingState = false;
 
   void initialControlsTimer() {
     Timer(const Duration(seconds: 3), () {
