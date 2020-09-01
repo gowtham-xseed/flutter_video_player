@@ -230,7 +230,9 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        onPressed: null,
+                        onPressed: () {
+                          flutterVideoPlayerController.playPauseToggle();
+                        },
                         icon:
                             Icon(Icons.warning, color: Colors.white, size: 40),
                       ),
@@ -239,7 +241,7 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
                           flutterVideoPlayerController.playPauseToggle();
                         },
                         child: Text(
-                          'Retry',
+                          '  Retry',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
