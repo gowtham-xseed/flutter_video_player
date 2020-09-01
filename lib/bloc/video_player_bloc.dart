@@ -48,10 +48,6 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
     bool currentPlayingState = videoPlayerController.value.isPlaying;
 
     if (videoPlayerController.value.hasError) {
-      // if (videoPlayerController.value.isPlaying) {
-      //   videoPlayerController.pause();
-      // }
-
       add(VideoPlayerErrorOccured());
       onPlayerStateChanged(VideoPlayerStates.error);
       print('VIDEO PLAYER ERROR => ' +
@@ -67,12 +63,12 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
       }
     }
 
-    if (videoPlayerController.value.duration ==
-        videoPlayerController.value.position) {
+    previousPlayingState = currentPlayingState;
+
+    if (videoPlayerController.value.duration.inSeconds ==
+        videoPlayerController.value.position.inSeconds) {
       onPlayerStateChanged(VideoPlayerStates.completed);
     }
-
-    previousPlayingState = currentPlayingState;
   }
 
   @override
@@ -105,9 +101,9 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
         videoPlayerController.pause();
         onPlayerStateChanged(VideoPlayerStates.paused);
       } else {
-        if (videoPlayerController.value.duration ==
-            videoPlayerController.value.position) {
-          videoPlayerController.seekTo(Duration(seconds: 0));
+        if (videoPlayerController.value.duration.inSeconds ==
+            videoPlayerController.value.position.inSeconds) {
+          videoPlayerController.seekTo(Duration(milliseconds: 0));
         }
 
         videoPlayerController.play();
