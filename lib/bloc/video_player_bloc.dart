@@ -65,8 +65,8 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
 
     previousPlayingState = currentPlayingState;
 
-    if (videoPlayerController.value.duration.inSeconds ==
-        videoPlayerController.value.position.inSeconds) {
+    if (videoPlayerController.value.duration.inMilliseconds ==
+        videoPlayerController.value.position.inMilliseconds) {
       onPlayerStateChanged(VideoPlayerStates.completed);
     }
   }
