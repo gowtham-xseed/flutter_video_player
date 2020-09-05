@@ -8,6 +8,7 @@ import 'package:flutter_video_player/components/youtube_skin.dart';
 import 'package:flutter_video_player/flutter_video_player.dart';
 import 'package:flutter_video_player/video_player_state.dart';
 import 'package:video_player/video_player.dart';
+import 'package:wakelock/wakelock.dart';
 
 typedef CustomSkinRenderer = Widget Function(
   FlutterVideoPlayerController flutterVideoPlayerController,
@@ -118,7 +119,9 @@ class FlutterVideoPlayer extends StatelessWidget {
     }
     SystemChrome.setEnabledSystemUIOverlays([]);
 
+    Wakelock.enable();
     await Navigator.of(context, rootNavigator: true).push(route);
+    Wakelock.disable();
   }
 
   AnimatedWidget _defaultRoutePageBuilder(
