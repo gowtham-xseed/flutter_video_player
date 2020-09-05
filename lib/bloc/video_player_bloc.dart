@@ -106,8 +106,13 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
           videoPlayerController.seekTo(Duration(milliseconds: 0));
         }
 
+        if (videoPlayerController.value.position.inSeconds == 0) {
+          onPlayerStateChanged(VideoPlayerStates.started);
+        } else {
+          onPlayerStateChanged(VideoPlayerStates.resumed);
+        }
+
         videoPlayerController.play();
-        onPlayerStateChanged(VideoPlayerStates.resumed);
       }
 
       final currentState = (state as VideoPlayerSuccess);
