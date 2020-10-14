@@ -255,7 +255,17 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
                 return initialStateWidget();
               }
             } else {
-              return initialStateWidget();
+              return Container(
+                decoration: BoxDecoration(
+                    image: placeholderImage != null
+                        ? DecorationImage(
+                            image: NetworkImage(placeholderImage),
+                            fit: BoxFit.cover)
+                        : null),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
             }
           });
     } else {
@@ -266,7 +276,7 @@ class FlutterVideoPlayerLayout extends StatelessWidget {
   Widget initialStateWidget() {
     return Container(
       decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5),
+          color: Colors.black.withOpacity(0.2),
           image: placeholderImage != null
               ? DecorationImage(
                   image: NetworkImage(placeholderImage), fit: BoxFit.cover)
