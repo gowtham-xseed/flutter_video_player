@@ -39,6 +39,8 @@ class FlutterVideoPlayer extends StatelessWidget {
   final OnPlayerStateChanged onPlayerStateChanged;
   final Function onRetry;
 
+  Orientation deviceOrientationBeforeFullScreen;
+
   FlutterVideoPlayerController flutterVideoPlayerController =
       FlutterVideoPlayerController();
 
@@ -64,6 +66,7 @@ class FlutterVideoPlayer extends StatelessWidget {
                   _popFullScreenWidget(context);
                 }
               }
+
               return true;
             }, listener: (BuildContext context, VideoPlayerState state) {
               flutterVideoPlayerController.updateVideoPlayerStream(state);
@@ -93,9 +96,11 @@ class FlutterVideoPlayer extends StatelessWidget {
   }
 
   _popFullScreenWidget(BuildContext context) {
-    SystemChrome.setPreferredOrientations(
-        <DeviceOrientation>[DeviceOrientation.portraitUp]);
-    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    if (deviceOrientationBeforeFullScreen == Orientation.portrait) {
+      SystemChrome.setPreferredOrientations(
+          <DeviceOrientation>[DeviceOrientation.portraitUp]);
+      SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    }
 
     Navigator.of(context, rootNavigator: true).pop();
   }
@@ -110,13 +115,18 @@ class FlutterVideoPlayer extends StatelessWidget {
           builderContext, animation, secondaryAnimation, videoPlayerBloc);
     });
 
-    if (Platform.isAndroid) {
-      SystemChrome.setPreferredOrientations(
-          <DeviceOrientation>[DeviceOrientation.landscapeLeft]);
-    } else {
-      SystemChrome.setPreferredOrientations(
-          <DeviceOrientation>[DeviceOrientation.landscapeRight]);
+    deviceOrientationBeforeFullScreen = MediaQuery.of(context).orientation;
+
+    if (deviceOrientationBeforeFullScreen == Orientation.portrait) {
+      if (Platform.isAndroid) {
+        SystemChrome.setPreferredOrientations(
+            <DeviceOrientation>[DeviceOrientation.landscapeLeft]);
+      } else {
+        SystemChrome.setPreferredOrientations(
+            <DeviceOrientation>[DeviceOrientation.landscapeRight]);
+      }
     }
+
     SystemChrome.setEnabledSystemUIOverlays([]);
 
     Wakelock.enable();

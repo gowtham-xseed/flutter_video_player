@@ -183,9 +183,11 @@ class _VideoAppState extends State<VideoApp> {
         child: Scaffold(
           body: Center(
             child: FlutterVideoPlayer(
+              Key(''),
               _controller,
               customSkinRenderer: customSkinRenderer,
               playOnlyInFullScreen: true,
+              onPlayerStateChanged: (event) {},
             ),
           ),
         ),
