@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_video_player/bloc/video_player_bloc.dart';
 import 'package:flutter_video_player/flutter_video_player.dart';
 import 'package:flutter_video_player/utils/video_player.dart';
@@ -16,6 +17,8 @@ class _VideoAppState extends State<VideoApp> {
 
   @override
   void initState() {
+    enablePortrait();
+
     super.initState();
     _controller = VideoPlayerController.network(
         'http://mirrors.standaloneinstaller.com/video-sample/page18-movie-4.m4v')
@@ -23,6 +26,10 @@ class _VideoAppState extends State<VideoApp> {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
       });
+  }
+
+  void enablePortrait() async {
+    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
 
   Widget initialWidget(flutterVideoPlayerController) {
@@ -65,7 +72,9 @@ class _VideoAppState extends State<VideoApp> {
                           child:
                               Image.asset('assets/images/back.png', height: 16),
                           onTap: () {
-                            flutterVideoPlayerController.playPauseToggle();
+                            flutterVideoPlayerController.toggleFullScreen(
+                              enableFullScreen: false,
+                            );
                           },
                         ),
                         SizedBox(
@@ -181,14 +190,18 @@ class _VideoAppState extends State<VideoApp> {
       title: 'Video Demo',
       home: SafeArea(
         child: Scaffold(
-          body: Center(
-            child: FlutterVideoPlayer(
-              Key(''),
-              _controller,
-              customSkinRenderer: customSkinRenderer,
-              playOnlyInFullScreen: true,
-              onPlayerStateChanged: (event) {},
-            ),
+          body: Column(
+            children: [
+              Text('Prefix'),
+              FlutterVideoPlayer(
+                Key(''),
+                _controller,
+                customSkinRenderer: customSkinRenderer,
+                playOnlyInFullScreen: true,
+                onPlayerStateChanged: (event) {},
+              ),
+              Text('Suffix'),
+            ],
           ),
         ),
       ),

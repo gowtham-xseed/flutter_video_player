@@ -22,8 +22,14 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
           videoPlayerController.value,
           false,
           false,
-          isFullScreenChanged: false,
         )) {
+    _lastLoadedState = VideoPlayerSuccess(
+      videoPlayerController,
+      videoPlayerController.value,
+      false,
+      false,
+    );
+
     if (!videoPlayerController.value.initialized) {
       videoPlayerController.initialize();
     }
@@ -36,7 +42,10 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   final bool playOnlyInFullScreen;
   final OnPlayerStateChanged onPlayerStateChanged;
   final Function onRetry;
+  VideoPlayerSuccess _lastLoadedState;
+
   bool previousPlayingState = false;
+  bool lastFullScreenState = false;
 
   void initialControlsTimer() {
     Timer(const Duration(seconds: 3), () {
@@ -55,10 +64,13 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
     } else {
       add(ProgresUpdated(videoPlayerController.value));
 
-      if (playOnlyInFullScreen && currentPlayingState != previousPlayingState) {
+      if (playOnlyInFullScreen &&
+          currentPlayingState == true &&
+          previousPlayingState == false) {
         // Enable full screen if the player is playing
+
         add(
-          VideoPlayerFullScreenToggled(enableFullScreen: currentPlayingState),
+          VideoPlayerFullScreenToggled(enableFullScreen: true),
         );
       }
     }
@@ -115,20 +127,24 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
         videoPlayerController.play();
       }
 
-      final currentState = (state as VideoPlayerSuccess);
-      yield VideoPlayerSuccess(
-          videoPlayerController,
-          videoPlayerController.value,
-          currentState.isFullScreen,
-          currentState.showControls,
-          isFullScreenChanged: false);
+      _lastLoadedState = _lastLoadedState.copyWith(
+        controllerValue: videoPlayerController.value,
+      );
+
+      yield _lastLoadedState;
     } else if (state is VideoPlayerInitial) {
       initialControlsTimer();
       videoPlayerController.play();
       onPlayerStateChanged(VideoPlayerStates.started);
-      yield VideoPlayerSuccess(
-          videoPlayerController, videoPlayerController.value, true, true,
-          isFullScreenChanged: false);
+      _lastLoadedState = VideoPlayerSuccess(
+        videoPlayerController,
+        videoPlayerController.value,
+        true,
+        true,
+        isFullScreenChanged: false,
+      );
+
+      yield _lastLoadedState;
     } else if (state is VideoPlayerFailure) {
       if (onRetry != null) {
         onRetry();
@@ -139,23 +155,20 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   Stream<VideoPlayerState> _mapProgresUpdatedToState(
       ProgresUpdated event) async* {
     if (state is VideoPlayerSuccess) {
-      final currentState = (state as VideoPlayerSuccess);
-      yield VideoPlayerSuccess(videoPlayerController, event.position,
-          currentState.isFullScreen, currentState.showControls,
-          isFullScreenChanged: false);
+      _lastLoadedState =
+          _lastLoadedState.copyWith(controllerValue: event.position);
+
+      yield _lastLoadedState;
     }
   }
 
   Stream<VideoPlayerState> _mapSeekedToState(VideoPlayerSeeked event) async* {
     if (state is VideoPlayerSuccess) {
       videoPlayerController.seekTo(Duration(seconds: event.position.toInt()));
-      final currentState = (state as VideoPlayerSuccess);
-      yield VideoPlayerSuccess(
-          videoPlayerController,
-          videoPlayerController.value,
-          currentState.isFullScreen,
-          currentState.showControls,
-          isFullScreenChanged: false);
+
+      _lastLoadedState = _lastLoadedState.copyWith(
+          controllerValue: videoPlayerController.value);
+      yield _lastLoadedState;
     }
   }
 
@@ -172,16 +185,24 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
           ? event.enableFullScreen
           : !currentState.isFullScreen;
 
-      yield VideoPlayerSuccess(videoPlayerController,
-          videoPlayerController.value, isFullScreen, currentState.showControls,
-          isFullScreenChanged: true);
+      if (isFullScreen != _lastLoadedState.isFullScreen) {
+        if (playOnlyInFullScreen && !isFullScreen) {
+          _lastLoadedState.controller.pause();
+        }
+
+        _lastLoadedState = _lastLoadedState.copyWith(
+          isFullScreen: isFullScreen,
+          isFullScreenChanged: true,
+        );
+
+        yield _lastLoadedState;
+      }
     }
   }
 
   Stream<VideoPlayerState> _mapControlsToggledToState() async* {
     if (state is VideoPlayerSuccess) {
-      final currentState = (state as VideoPlayerSuccess);
-      if (!currentState.showControls) {
+      if (!_lastLoadedState.showControls) {
         if (_timer != null && _timer.isActive) {
           _timer.cancel();
         }
@@ -189,21 +210,19 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
           add(VideoPlayerControlsHidden());
         });
       }
-      yield VideoPlayerSuccess(
-          videoPlayerController,
-          videoPlayerController.value,
-          currentState.isFullScreen,
-          !currentState.showControls,
-          isFullScreenChanged: false);
+
+      _lastLoadedState = _lastLoadedState.copyWith(
+        showControls: !_lastLoadedState.showControls,
+      );
+      yield _lastLoadedState;
     }
   }
 
   Stream<VideoPlayerState> _mapControlsHiddenToState() async* {
     if (state is VideoPlayerSuccess) {
-      final currentState = (state as VideoPlayerSuccess);
-      yield VideoPlayerSuccess(videoPlayerController,
-          videoPlayerController.value, currentState.isFullScreen, false,
-          isFullScreenChanged: false);
+      _lastLoadedState = _lastLoadedState.copyWith(
+          showControls: !_lastLoadedState.showControls);
+      yield _lastLoadedState;
     }
   }
 

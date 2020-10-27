@@ -146,7 +146,11 @@ class FlutterVideoPlayer extends StatelessWidget {
           value: videoPlayerBloc,
           child: WillPopScope(
             onWillPop: () {
-              flutterVideoPlayerController.playPauseToggle();
+              flutterVideoPlayerController.toggleFullScreen(
+                enableFullScreen: false,
+              );
+
+              return Future.value(false);
             },
             child: Scaffold(
               resizeToAvoidBottomPadding: false,

@@ -30,8 +30,9 @@ class FlutterVideoPlayerController {
     videoPlayerBloc.add(VideoPlayerToggled());
   }
 
-  void toggleFullScreen() {
-    videoPlayerBloc.add(VideoPlayerFullScreenToggled());
+  void toggleFullScreen({bool enableFullScreen}) {
+    videoPlayerBloc
+        .add(VideoPlayerFullScreenToggled(enableFullScreen: enableFullScreen));
   }
 
   void fastForward() async {
