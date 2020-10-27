@@ -136,12 +136,8 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
       initialControlsTimer();
       videoPlayerController.play();
       onPlayerStateChanged(VideoPlayerStates.started);
-      _lastLoadedState = VideoPlayerSuccess(
-        videoPlayerController,
-        videoPlayerController.value,
-        true,
-        true,
-        isFullScreenChanged: false,
+      _lastLoadedState = _lastLoadedState.copyWith(
+        controllerValue: videoPlayerController.value,
       );
 
       yield _lastLoadedState;
