@@ -13,13 +13,28 @@ class VideoPlayerLoading extends VideoPlayerState {}
 class VideoPlayerSuccess extends VideoPlayerState {
   VideoPlayerSuccess(this.controller, this.controllerValue, this.isFullScreen,
       this.showControls,
-      {this.isFullScreenChanged});
+      {this.isFullScreenChanged = false});
 
   final VideoPlayerValue controllerValue;
   final VideoPlayerController controller;
   final bool isFullScreen;
   final bool isFullScreenChanged;
   final bool showControls;
+
+  VideoPlayerSuccess copyWith({
+    VideoPlayerValue controllerValue,
+    VideoPlayerController controller,
+    bool isFullScreen,
+    bool isFullScreenChanged,
+    bool showControls,
+  }) =>
+      VideoPlayerSuccess(
+        controller ?? this.controller,
+        controllerValue ?? this.controllerValue,
+        isFullScreen ?? this.isFullScreen,
+        showControls ?? this.showControls,
+        isFullScreenChanged: isFullScreenChanged ?? false,
+      );
 
   @override
   List<Object> get props => [
