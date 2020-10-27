@@ -45,7 +45,6 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
   VideoPlayerSuccess _lastLoadedState;
 
   bool previousPlayingState = false;
-  bool lastFullScreenState = false;
 
   void initialControlsTimer() {
     Timer(const Duration(seconds: 3), () {
