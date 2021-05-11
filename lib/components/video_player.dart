@@ -153,7 +153,6 @@ class FlutterVideoPlayer extends StatelessWidget {
               return Future.value(false);
             },
             child: Scaffold(
-              resizeToAvoidBottomPadding: false,
               body: Container(
                 alignment: Alignment.center,
                 color: Colors.black,

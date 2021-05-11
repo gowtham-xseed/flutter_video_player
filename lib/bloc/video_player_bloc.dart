@@ -30,7 +30,7 @@ class VideoPlayerBloc extends Bloc<VideoPlayerEvent, VideoPlayerState> {
       false,
     );
 
-    if (!videoPlayerController.value.initialized) {
+    if (!videoPlayerController.value.isInitialized) {
       videoPlayerController.initialize();
     }
 
